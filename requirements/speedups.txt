@@ -1,0 +1,6 @@
+# Optional dependencies that make things work faster
+uvloop
+ujson
+cchardet
+aiodns
+aiohttp[speedups]
