@@ -1,0 +1,57 @@
+[build-system]
+requires = ["setuptools>=61.2", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "RestlessFunnelBot"
+description = "Message aggregator for social networks"
+readme = "README.md"
+requires-python = ">=3.7,<=3.11"
+license = {text = "MIT"}
+authors = [
+    {name = "0dminnimda", email = "0dminnimda.contact@gmail.com"},
+]
+classifiers = [
+    "Development Status :: 1 - Planning",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Other Audience",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: System :: Archiving",
+    "Topic :: System :: Logging",
+    "Topic :: System :: Monitoring",
+    "Topic :: Utilities",
+    "Typing :: Typed",
+]
+dynamic = ["version", "dependencies"]  # , "optional-dependencies"]
+
+[project.urls]
+# "Documentation" = "https://RestlessFunnelBot.readthedocs.io/en/latest/"
+"Source" = "https://github.com/0dminnimda/RestlessFunnelBot"
+"Bug Tracker" = "https://github.com/0dminnimda/RestlessFunnelBot/issues"
+
+[tool.setuptools.package-data]
+RestlessFunnelBot = ["py.typed"]
+
+[tool.setuptools.dynamic]
+version = {attr = "RestlessFunnelBot.__version__"}
+dependencies = {file = "requirements/basic.txt"}
+
+# [tool.setuptools.dynamic.optional-dependencies]
+# docs = {file = "requirements/docs.txt"}
+# test = {file = "requirements/test.txt"}
+
+# python -m mypy --config-file pyproject.toml
+[tool.mypy]
+python_version = "3.7"
+ignore_missing_imports = true
+check_untyped_defs = true
+files = ["RestlessFunnelBot"]  # , "tests"]
