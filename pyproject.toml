@@ -31,7 +31,7 @@ classifiers = [
     "Topic :: Utilities",
     "Typing :: Typed",
 ]
-dynamic = ["version", "dependencies"]  # , "optional-dependencies"]
+dynamic = ["version", "dependencies", "optional-dependencies"]
 
 [project.urls]
 # "Documentation" = "https://RestlessFunnelBot.readthedocs.io/en/latest/"
@@ -45,9 +45,10 @@ RestlessFunnelBot = ["py.typed"]
 version = {attr = "RestlessFunnelBot.__version__"}
 dependencies = {file = "requirements/basic.txt"}
 
-# [tool.setuptools.dynamic.optional-dependencies]
+[tool.setuptools.dynamic.optional-dependencies]
 # docs = {file = "requirements/docs.txt"}
 # test = {file = "requirements/test.txt"}
+speedups = {file = "requirements/speedups.txt"}
 
 # python -m mypy --config-file pyproject.toml
 [tool.mypy]
