@@ -6,6 +6,7 @@ from aiogram.dispatcher.handler import SkipHandler
 from aiogram.types import ChatType
 
 from . import secrets
+from .db import save_message, Message, Platform
 
 logging.basicConfig(level=logging.INFO)
 
@@ -14,6 +15,10 @@ dp = Dispatcher(bot=bot)
 
 
 # print("ggggggggggggggg")
+
+
+def message_to_model(msg: types.Message) -> Message:
+    return Message(text=msg.text, timestamp=msg.date, platform=Platform.TELEGRAM)
 
 
 @dp.message_handler(commands=["start", "help"])
@@ -26,7 +31,7 @@ async def send_welcome(message: types.Message):
 async def echo(msg: types.Message):
     print("mes", msg.text, msg.chat.type)
     if msg.chat.type == ChatType.GROUP:
-        pass
+        save_message(message_to_model(msg))
     await msg.answer(msg.text)
 
 
