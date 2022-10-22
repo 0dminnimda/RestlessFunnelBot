@@ -2,13 +2,13 @@
 
 from asyncio import run as run_async
 
+from RestlessFunnelBot import telegram_bot
 from RestlessFunnelBot.db import db_tables
-from RestlessFunnelBot.telegram import run
 
 
 async def main():
     async with db_tables():
-        await run()
+        await telegram_bot.run()
 
 
 run_async(main())
