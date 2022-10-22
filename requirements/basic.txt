@@ -1,3 +1,6 @@
 aiogram
+
+discord.py
+
 sqlmodel
 aiosqlite
