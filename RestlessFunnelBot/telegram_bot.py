@@ -6,7 +6,7 @@ from aiogram import Bot, Dispatcher
 from aiogram import types as aiots
 
 from . import secrets
-from .db import make_db, model_mapper
+from .database import make_db, model_mapper
 from .models import TELEGRAM
 
 

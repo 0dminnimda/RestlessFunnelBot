@@ -3,7 +3,7 @@
 from asyncio import run as run_async
 
 from RestlessFunnelBot import telegram_bot
-from RestlessFunnelBot.db import db_tables
+from RestlessFunnelBot.database import db_tables
 
 
 async def main():
