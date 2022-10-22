@@ -157,3 +157,5 @@ cython_debug/
 
 # Project ignores
 RestlessFunnelBot/secrets.py
+
+RestlessFunnelBot/sqlite.db
