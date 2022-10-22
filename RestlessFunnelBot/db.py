@@ -5,7 +5,6 @@ from typing import (
     AsyncGenerator,
     Callable,
     Dict,
-    Generic,
     List,
     Optional,
     Type,
@@ -107,20 +106,6 @@ class DataBase(AsyncSession):
         if user is not None:
             return user
         return self.create_raw(User, id=id)
-
-    # # Chat
-    # def create_chat(self, obj: Any) -> Chat:
-    #     return self.create(Chat, obj)
-
-    # async def read_chat(self, id: int) -> Optional[Chat]:
-    #     selection = select(Chat).filter(Chat.id == id)
-    #     return (await self.fetch(selection)).one_or_none()
-
-    # async def get_chat(self, id: int) -> Chat:
-    #     chat = await self.read_chat(id)
-    #     if chat is not None:
-    #         return chat
-    #     return self.create_raw(Chat, id=id)
 
 
 def make_session(platform: Platform) -> DataBase:
