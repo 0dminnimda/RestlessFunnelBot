@@ -60,3 +60,8 @@ class User(BaseModel, table=True):
             # otherwise list is not updated in the db
             self.accessible_chats = list(self.accessible_chats)
             self.accessible_chats.insert(ind, id)
+
+
+Message.update_forward_refs()
+Chat.update_forward_refs()
+User.update_forward_refs()
