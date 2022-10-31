@@ -54,14 +54,15 @@ class Chat(BaseModel, table=True):
 
 class User(BaseModel, table=True):
     id: int = Field(primary_key=True)
+    # messages: List[Message] = Relationship(back_populates="author")
     accessible_chats: List[int] = Field(default_factory=list, sa_column=Column(JSON))
 
-    def add_chat(self, id: int) -> None:
-        ind = bisect(self.accessible_chats, id)
-        if not (ind > 0 and self.accessible_chats[ind - 1] == id):
+    def add_chat(self, chat: Chat) -> None:
+        ind = bisect(self.accessible_chats, chat.id)
+        if not (ind > 0 and self.accessible_chats[ind - 1] == chat.id):
             # otherwise list is not updated in the db
             self.accessible_chats = list(self.accessible_chats)
-            self.accessible_chats.insert(ind, id)
+            self.accessible_chats.insert(ind, chat.id)
 
 
 Message.update_forward_refs()
