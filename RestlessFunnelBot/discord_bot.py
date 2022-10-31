@@ -1,10 +1,7 @@
 import logging
-from asyncio import gather
 from typing import Any, Dict, Optional
 
 import discord
-
-# from discord.channel import TextChannel
 from discord.abc import GuildChannel as TargetChat
 from discord.enums import ChannelType as TargetChatType
 from discord.member import Member as TargetUser
