@@ -24,6 +24,12 @@ class Message(BaseModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     text: str
     timestamp: datetime
+    author_id: int = Field(foreign_key="user.id")
+    # author: User = Relationship(sa_relationship_kwargs={"uselist": False})
+    chat_id: int = Field(foreign_key="chat.id")
+    # chat: Chat = Relationship(
+    #     sa_relationship_kwargs={"uselist": False}, back_populates="messages"
+    # )
 
 
 class User(BaseModel, table=True):
