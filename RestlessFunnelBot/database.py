@@ -59,13 +59,13 @@ class DataBase(AsyncSession):
         return (await self.fetch(selection)).all()
 
     async def read_one(self, model: Type[T], *args, **kwargs: Any) -> T:
-        selection = select(model).filter(*args).filter_by(**kwargs)  # .first()
+        selection = select(model).filter(*args).filter_by(**kwargs)
         return (await self.fetch(selection)).one()
 
     async def read_one_or_none(
         self, model: Type[T], *args, **kwargs: Any
     ) -> Optional[T]:
-        selection = select(model).filter(*args).filter_by(**kwargs)  # .first()
+        selection = select(model).filter(*args).filter_by(**kwargs)
         return (await self.fetch(selection)).one_or_none()
 
     def create_no_add(self, model: Type[T], **kwargs: Any) -> T:
