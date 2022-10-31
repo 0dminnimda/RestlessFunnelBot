@@ -28,7 +28,9 @@ class Message(BaseModel, table=True):
     timestamp: datetime
     author_id: int = Field(foreign_key="user.id")
     # author: User = Relationship(sa_relationship_kwargs={"uselist": False})
+    author: User = Relationship()  # back_populates="messages")
     chat_id: int = Field(foreign_key="chat.id")
+    chat: Chat = Relationship()  # back_populates="messages")
     # chat: Chat = Relationship(
     #     sa_relationship_kwargs={"uselist": False}, back_populates="messages"
     # )
@@ -40,7 +42,7 @@ NAME_SEPARATOR = chr(1)
 class Chat(BaseModel, table=True):
     id: int = Field(primary_key=True)
     name: str
-    messages: List[Message] = Relationship()  # back_populates="chat")
+    # messages: List[Message] = Relationship(back_populates="chat")
 
     @staticmethod
     def generate_name(name: str, *names: str) -> str:
