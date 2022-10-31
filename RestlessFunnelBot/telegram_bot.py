@@ -1,9 +1,7 @@
 import logging
-from asyncio import gather
 from typing import Any, Dict
 
 from aiogram import Bot, Dispatcher
-# from aiogram import types as aiots
 from aiogram.types import Chat as TargetChat
 from aiogram.types import ChatType as TargetChatType
 from aiogram.types import Message as TargetMessage
@@ -12,9 +10,9 @@ from aiogram.types import User as TargetUser
 from . import secrets
 from .common import handle_new_message
 from .database import make_db
-from .mappers import map_model, model_mapper
+from .mappers import model_mapper
 from .models import TELEGRAM as PLATFORM
-from .models import Chat, Message, Platform, User
+from .models import Chat, Message, User
 
 
 @model_mapper(TargetMessage, Message)
