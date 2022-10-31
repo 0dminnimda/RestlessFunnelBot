@@ -13,9 +13,10 @@ from . import secrets
 from .database import make_db
 from .mappers import map_model, model_mapper
 from .models import TELEGRAM as PLATFORM
+from .models import Chat, Message, Platform, User
 
 
-@model_mapper(TargetMessage)
+@model_mapper(TargetMessage, Message)
 def message_to_model(msg: TargetMessage) -> Dict[str, Any]:
     author = msg.from_user
     chat = msg.chat
@@ -29,14 +30,14 @@ def message_to_model(msg: TargetMessage) -> Dict[str, Any]:
     )
 
 
-@model_mapper(TargetUser)
+@model_mapper(TargetUser, User)
 def user_to_model(user: TargetUser) -> Dict[str, Any]:
     return dict(id=user.id)
 
 
-@model_mapper(TargetChat)
+@model_mapper(TargetChat, Chat)
 def chat_to_model(chat: TargetChat) -> Dict[str, Any]:
-    return dict(id=chat.id)
+    return dict(id=chat.id, name=Chat.generate_name(chat.title))
 
 
 logging.basicConfig(level=logging.INFO)
