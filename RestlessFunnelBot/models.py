@@ -1,10 +1,12 @@
+from __future__ import annotations
+
 from bisect import bisect
 from datetime import datetime
 from enum import Enum
 from typing import List, Optional
 
 from sqlalchemy.sql.schema import Column
-from sqlmodel import JSON, Field, SQLModel
+from sqlmodel import JSON, Field, Relationship, SQLModel
 
 
 class Platform(Enum):
@@ -30,6 +32,22 @@ class Message(BaseModel, table=True):
     # chat: Chat = Relationship(
     #     sa_relationship_kwargs={"uselist": False}, back_populates="messages"
     # )
+
+
+NAME_SEPARATOR = chr(1)
+
+
+class Chat(BaseModel, table=True):
+    id: int = Field(primary_key=True)
+    name: str
+    messages: List[Message] = Relationship()  # back_populates="chat")
+
+    @staticmethod
+    def generate_name(name: str, *names: str) -> str:
+        return NAME_SEPARATOR.join((name,) + names)
+
+    def represent_name(self, sep: str) -> str:
+        return self.name.replace(NAME_SEPARATOR, sep)
 
 
 class User(BaseModel, table=True):
