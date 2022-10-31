@@ -16,17 +16,19 @@ TELEGRAM = Platform.TELEGRAM
 DISCORD = Platform.DISCORD
 
 
-class Message(SQLModel, table=True):
+class BaseModel(SQLModel):
+    platform: Platform
+
+
+class Message(BaseModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     text: str
     timestamp: datetime
-    platform: Platform
 
 
-class User(SQLModel, table=True):
+class User(BaseModel, table=True):
     id: int = Field(primary_key=True)
     accessible_chats: List[int] = Field(default_factory=list, sa_column=Column(JSON))
-    platform: Platform
 
     def add_chat(self, id: int) -> None:
         ind = bisect(self.accessible_chats, id)
