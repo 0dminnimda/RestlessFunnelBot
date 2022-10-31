@@ -9,9 +9,11 @@ from sqlmodel import JSON, Field, SQLModel
 
 class Platform(Enum):
     TELEGRAM = "telegram"
+    DISCORD = "discord"
 
 
 TELEGRAM = Platform.TELEGRAM
+DISCORD = Platform.DISCORD
 
 
 class Message(SQLModel, table=True):
