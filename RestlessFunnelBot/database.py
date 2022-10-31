@@ -55,19 +55,34 @@ class DataBase(AsyncSession):
         result: Result = await self.execute(selection)
         return result.scalars()
 
-    # def create_raw(self, model: Type[T], **kwargs) -> T:
-    #     result = model(**kwargs)
+    async def read_all(self, model: Type[T], **kwargs: Any) -> List[T]:
+        selection = select(model).filter_by(**kwargs)
+        return (await self.fetch(selection)).all()
 
-    # async def get_or_create(self, model: Type[T], **kwargs) -> T:
-    #     selection = select(model).filter_by(**kwargs).first()
-    #     instance = (await self.fetch(selection)).one_or_none()
-    #     if instance is not None:
-    #         return instance
-    #     else:
-    #         instance = model(**kwargs)
-    #         session.add(instance)
-    #         session.commit()
-    #         return instance
+    async def read_one(self, model: Type[T], **kwargs: Any) -> T:
+        selection = select(model).filter_by(**kwargs)  # .first()
+        return (await self.fetch(selection)).one()
+
+    async def read_one_or_none(self, model: Type[T], **kwargs: Any) -> Optional[T]:
+        selection = select(model).filter_by(**kwargs)  # .first()
+        return (await self.fetch(selection)).one_or_none()
+
+    def create(self, model: Type[T], **kwargs: Any) -> T:
+        kwargs["platform"] = self.platform
+        instance = model(**kwargs)
+        self.add(instance)
+        return instance
+
+    async def read_or_create(self, model: Type[T], **kwargs: Any) -> T:
+        kwargs["platform"] = self.platform
+        instance = await self.read_one_or_none(model, **kwargs)
+        if instance is not None:
+            return instance
+        return self.create(model, **kwargs)
+        # instance = model(**kwargs)
+        # session.add(instance)
+        # session.commit()
+        # return instance
 
     #     if not isinstance(obj, dict):
     #         model = map_model(obj)
@@ -82,10 +97,10 @@ class DataBase(AsyncSession):
     #     self.add(instance)
     #     return instance
 
-    def create(self, obj: Any, **extra: Any) -> Any:
-        extra["platform"] = self.platform
-        return map_model(obj, extra, recursive=True)
-        # return map_model(obj, extra, self.add, recursive=True)
+    # async def create(self, obj: Any, **extra: Any) -> Any:
+    #     extra["platform"] = self.platform
+    #     return await map_model(obj, extra, self.get_or_create, recursive=True)
+    #     # return map_model(obj, extra, self.add, recursive=True)
 
     # def create_raw(self, model: Type[T], *args: Any, **kwargs: Any) -> T:
     #     kwargs["platform"] = self.platform
@@ -97,46 +112,46 @@ class DataBase(AsyncSession):
     #     return self.create_raw(model, **map_model(obj, recursive=True))
 
     # Message
-    def create_message(self, obj: Any) -> Message:
-        result = self.create(obj)
-        assert isinstance(result, Message)
-        return result
+    # def create_message(self, obj: Any) -> Message:
+    #     result = self.create(obj)
+    #     assert isinstance(result, Message)
+    #     return result
 
-    async def read_messages(self) -> List[Message]:
-        selection = select(Message)
-        return (await self.fetch(selection)).all()
+    # async def read_messages(self) -> List[Message]:
+    #     selection = select(Message)
+    #     return (await self.fetch(selection)).all()
 
     # User
     # def create_user(self, obj: Any) -> User:
     #     return self.create(User, obj)
 
-    async def read_user(self, id: int) -> Optional[User]:
-        selection = select(User).filter(User.id == id)
-        return (await self.fetch(selection)).one_or_none()
+    # async def read_user(self, id: int) -> Optional[User]:
+    #     selection = select(User).filter(User.id == id)
+    #     return (await self.fetch(selection)).one_or_none()
 
-    async def get_user(self, obj: Any) -> User:
-        if not isinstance(obj, dict):
-            model = map_model(obj)
-        user = await self.read_user(model["id"])
-        if user is not None:
-            return user
-        return self.create_raw(User, **model)
+    # async def get_user(self, obj: Any) -> User:
+    #     if not isinstance(obj, dict):
+    #         model = map_model(obj)
+    #     user = await self.read_user(model["id"])
+    #     if user is not None:
+    #         return user
+    #     return self.create_raw(User, **model)
 
     # Chat
     # def create_chat(self, obj: Any) -> Chat:
     #     return self.create(Chat, obj)
 
-    async def read_chat(self, id: int) -> Optional[Chat]:
-        selection = select(Chat).filter(Chat.id == id)
-        return (await self.fetch(selection)).one_or_none()
+    # async def read_chat(self, id: int) -> Optional[Chat]:
+    #     selection = select(Chat).filter(Chat.id == id)
+    #     return (await self.fetch(selection)).one_or_none()
 
-    async def get_chat(self, obj: Any) -> Chat:
-        if not isinstance(obj, dict):
-            model = map_model(obj)
-        chat = await self.read_chat(model["id"])
-        if chat is not None:
-            return chat
-        return self.create_raw(Chat, **model)
+    # async def get_chat(self, obj: Any) -> Chat:
+    #     if not isinstance(obj, dict):
+    #         model = map_model(obj)
+    #     chat = await self.read_chat(model["id"])
+    #     if chat is not None:
+    #         return chat
+    #     return self.create_raw(Chat, **model)
 
 
 def make_session(platform: Platform) -> DataBase:

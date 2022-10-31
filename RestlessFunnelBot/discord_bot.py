@@ -66,13 +66,18 @@ async def on_message(in_msg):
 
             if in_msg.content.startswith("/list"):
                 messages = []
-                for msg in await db.read_messages():
+                for msg in await db.read_all(Message):
                     messages.append("-" * 50 + f"\n{msg.id}: {msg.text}")
                 text = "List of all messages\n" + "\n\n".join(messages)
                 await in_msg.channel.send(text, reference=in_msg)
                 return None
 
-            msg = db.create_message(in_msg)
+            mod = map_model(in_msg, recursive=True)
+            await db.read_or_create(Chat, **mod.pop("chat"))
+            await db.read_or_create(User, **mod.pop("author"))
+            db.create(Message, **mod)
+
+            # msg = db.create_message(in_msg)
             # model = map_model(in_msg)
             # model["author"] = db.create_user(model["author"])
             # model["chat"] = db.create_chat(model["chat"])
@@ -82,7 +87,8 @@ async def on_message(in_msg):
 
             # user = await db.get_user(in_msg.author)
             # user.add_chat(in_msg.channel.id)
-            msg.author.add_chat(msg.chat_id)
+
+            # msg.author.add_chat(msg.chat_id)
 
         await in_msg.channel.send(in_msg.content)
 

@@ -1,4 +1,5 @@
-from typing import Any, Callable, Dict, Optional, Tuple, Type, TypeVar
+from typing import (Any, Callable, Dict, Optional, Protocol, Tuple, Type,
+                    TypeVar)
 
 T = TypeVar("T", bound=Any)
 M = TypeVar("M", bound=Any)
@@ -27,9 +28,16 @@ def _find_mapper_key(type: Type[T]) -> Optional[Type[Any]]:
         assert False, "Not Implemented yet"
 
 
+# class CreatorCallable(Protocol):
+#     async def __call__(self, model: Type[T], **kwargs: Any) -> T:
+#         ...
+
+
 def _sub_map_model(
-    obj: T, extra: Dict[str, Any], handler: Callable[[Any], Any], recursive: bool
-) -> Optional[M]:
+    obj: Any, extra: Dict[str, Any],
+    # creator: CreatorCallable,
+    recursive: bool
+) -> Optional[Dict[str, Any]]:
     key = _find_mapper_key(type(obj))
     if key is None:
         return None
@@ -38,22 +46,22 @@ def _sub_map_model(
     fields = {**extra, **mapper(obj)}
     if recursive:
         for name, value in fields.items():
-            sub_result = _sub_map_model(value, extra, handler, recursive)
+            sub_result = _sub_map_model(value, extra, recursive)
             if sub_result is not None:
                 fields[name] = sub_result
 
-    result = model(**fields)
-    handler(result)
-    return result
+    return fields  # await creator(model, **fields)
 
 
 def map_model(
     obj: Any,
-    extra: Dict[str, Any],
-    handler: Callable[[Any], Any] = lambda x: x,
+    extra: Dict[str, Any] = dict(),
+    # creator: CreatorCallable,
+    # extra: Dict[str, Any] = dict(),
+    # creator: CreatorCallable = lambda model, **kwargs: model(**kwargs),
     recursive: bool = False,
-) -> Any:
-    result = _sub_map_model(obj, extra, handler, recursive)
+) -> Dict[str, Any]:
+    result = _sub_map_model(obj, extra, recursive)
     if result is None:
         raise KeyError(f"No mapping found for type {type(obj)}")
     return result
@@ -78,4 +86,14 @@ def map_model(
 #     fields = mapper(obj)
 #     if recursive:
 #         fields = _sub_map_model(fields, extra)
+#     return model(**fields, **extra)
+
+
+# def map_model(obj: T, extra: Dict[str, Any], recursive: bool = False) -> M:
+#     result = _find_mapper_key(type(obj))
+#     if result is None:
+#         raise KeyError(f"No mapping found for type {type(obj)}")
+#     model, mapper = _model_mappers[result]
+
+#     fields = mapper(obj)
 #     return model(**fields, **extra)
