@@ -12,8 +12,9 @@ from discord.message import Message as TargetMessage
 from discord.utils import MISSING
 
 from . import secrets
+from .common import handle_new_message
 from .database import make_db
-from .mappers import map_model, model_mapper
+from .mappers import model_mapper
 from .models import DISCORD as PLATFORM
 from .models import Chat, Message, User
 
@@ -58,39 +59,19 @@ async def on_ready():
 
 @client.event
 async def on_message(in_msg):
+    if in_msg.author == client.user:
+        return
+
+    if in_msg.channel.type != TargetChatType.text:
+        return
+
     async with make_db(PLATFORM) as db:
-        if in_msg.author == client.user:
-            return
+        result = await handle_new_message(db, in_msg)
 
-        if in_msg.channel.type == TargetChatType.text:
+    if result:
+        await in_msg.channel.send(result, reference=in_msg)
 
-            if in_msg.content.startswith("/list"):
-                messages = []
-                for msg in await db.read_all(Message):
-                    messages.append("-" * 50 + f"\n{msg.id}: {msg.text}")
-                text = "List of all messages\n" + "\n\n".join(messages)
-                await in_msg.channel.send(text, reference=in_msg)
-                return None
-
-            mod = map_model(in_msg, recursive=True)
-            await db.read_or_create(Chat, **mod.pop("chat"))
-            await db.read_or_create(User, **mod.pop("author"))
-            db.create(Message, **mod)
-
-            # msg = db.create_message(in_msg)
-            # model = map_model(in_msg)
-            # model["author"] = db.create_user(model["author"])
-            # model["chat"] = db.create_chat(model["chat"])
-            # msg = db.create_raw(Message, **model)
-
-            # # db.create_message(in_msg)
-
-            # user = await db.get_user(in_msg.author)
-            # user.add_chat(in_msg.channel.id)
-
-            # msg.author.add_chat(msg.chat_id)
-
-        await in_msg.channel.send(in_msg.content)
+    # await in_msg.channel.send(in_msg.content)
 
 
 async def run(reconnect: bool = True):
