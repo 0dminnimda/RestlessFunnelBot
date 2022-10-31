@@ -55,16 +55,18 @@ class DataBase(AsyncSession):
         result: Result = await self.execute(selection)
         return result.scalars()
 
-    async def read_all(self, model: Type[T], **kwargs: Any) -> List[T]:
-        selection = select(model).filter_by(**kwargs)
+    async def read_all(self, model: Type[T], *args, **kwargs: Any) -> List[T]:
+        selection = select(model).filter(*args).filter_by(**kwargs)
         return (await self.fetch(selection)).all()
 
-    async def read_one(self, model: Type[T], **kwargs: Any) -> T:
-        selection = select(model).filter_by(**kwargs)  # .first()
+    async def read_one(self, model: Type[T], *args, **kwargs: Any) -> T:
+        selection = select(model).filter(*args).filter_by(**kwargs)  # .first()
         return (await self.fetch(selection)).one()
 
-    async def read_one_or_none(self, model: Type[T], **kwargs: Any) -> Optional[T]:
-        selection = select(model).filter_by(**kwargs)  # .first()
+    async def read_one_or_none(
+        self, model: Type[T], *args, **kwargs: Any
+    ) -> Optional[T]:
+        selection = select(model).filter(*args).filter_by(**kwargs)  # .first()
         return (await self.fetch(selection)).one_or_none()
 
     def create(self, model: Type[T], **kwargs: Any) -> T:
