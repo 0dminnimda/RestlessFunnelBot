@@ -17,7 +17,7 @@ def model_mapper(type: Type[T], to_type: Type[M]) -> Callable[[Mapper], Mapper]:
     return inner
 
 
-def _find_mapper_key(type: Type[T]) -> Optional[Type[Any]]:
+def get_mapped_type(type: Type[Any]) -> Optional[Type[Any]]:
     intersection = _model_mappers.keys() & ((type,) + type.__bases__)
     if len(intersection) == 0:
         return None
@@ -27,24 +27,25 @@ def _find_mapper_key(type: Type[T]) -> Optional[Type[Any]]:
         assert False, "Not Implemented yet"
 
 
-def _sub_map_model(obj: Any, recursive: bool) -> Optional[Dict[str, Any]]:
-    key = _find_mapper_key(type(obj))
-    if key is None:
+def optional_map_model(obj: Any, recursive: bool) -> Optional[Dict[str, Any]]:
+    type_key = get_mapped_type(type(obj))
+    if type_key is None:
         return None
-    model, mapper = _model_mappers[key]
+    model, mapper = _model_mappers[type_key]
 
     fields = mapper(obj)
-    if recursive:
-        for name, value in fields.items():
-            sub_result = _sub_map_model(value, recursive)
-            if sub_result is not None:
-                fields[name] = sub_result
+    if not recursive:
+        return fields
 
+    for name, value in fields.items():
+        sub_result = optional_map_model(value, recursive)
+        if sub_result is not None:
+            fields[name] = sub_result
     return fields
 
 
 def map_model(obj: Any, recursive: bool = False) -> Dict[str, Any]:
-    result = _sub_map_model(obj, recursive)
+    result = optional_map_model(obj, recursive)
     if result is None:
         raise KeyError(f"No mapping found for type {type(obj)}")
     return result
