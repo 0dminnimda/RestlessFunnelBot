@@ -69,9 +69,12 @@ class DataBase(AsyncSession):
         selection = select(model).filter(*args).filter_by(**kwargs)  # .first()
         return (await self.fetch(selection)).one_or_none()
 
-    def create(self, model: Type[T], **kwargs: Any) -> T:
+    def create_no_add(self, model: Type[T], **kwargs: Any) -> T:
         kwargs["platform"] = self.platform
-        instance = model(**kwargs)
+        return model(**kwargs)
+
+    def create(self, model: Type[T], **kwargs: Any) -> T:
+        instance = self.create_no_add(model, **kwargs)
         self.add(instance)
         return instance
 
