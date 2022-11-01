@@ -88,4 +88,6 @@ async def run(reconnect: bool = True):
     async with client:
         await client.start(secrets.DISCORD_API_TOKEN, reconnect=reconnect)
 
-    # client.run(secrets.DISCORD_API_TOKEN)
+
+def run_sync():
+    client.run(secrets.DISCORD_API_TOKEN)
