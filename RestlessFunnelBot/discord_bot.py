@@ -55,7 +55,7 @@ async def on_ready():
 
 
 @client.event
-async def on_message(in_msg):
+async def on_message(in_msg: TargetMessage):
     if in_msg.author == client.user:
         return
 
