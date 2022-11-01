@@ -35,6 +35,13 @@ async def make_message(db: DataBase, in_msg: Any, chat: Any, author: Any) -> Mes
     return db.create_no_add(Message, **mod)
 
 
+async def greet():
+    return (
+        "Hi, I'm RestlessFunnelBot!\n"
+        "I listen to others, and then I retell it to you 🤗\n"
+    )
+
+
 async def handle_message(db: DataBase, msg: Message, is_private: bool) -> Optional[str]:
     if not is_private:
         db.add(msg)
@@ -44,5 +51,7 @@ async def handle_message(db: DataBase, msg: Message, is_private: bool) -> Option
         return await list_messages(db)
     if msg.text.startswith("/chats"):
         return await list_accessible_chats(db, msg.author)
+    if msg.text.startswith("/start") or msg.text.startswith("/help"):
+        return await greet()
 
     return None
