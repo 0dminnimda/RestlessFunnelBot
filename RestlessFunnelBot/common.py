@@ -34,9 +34,8 @@ async def make_message(db: DataBase, in_msg: Any, chat: Any, author: Any) -> Mes
 
     return db.create_no_add(Message, **mod)
 
-async def handle_new_message(db: DataBase, in_msg: Any) -> Optional[str]:
-    msg = await make_message(db, in_msg)
 
+async def handle_message(db: DataBase, msg: Message) -> Optional[str]:
     if msg.text.startswith("/list"):
         return await list_messages(db)
 
