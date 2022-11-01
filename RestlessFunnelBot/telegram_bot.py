@@ -51,14 +51,11 @@ async def send_welcome(in_msg: TargetMessage):
 
 @dp.message_handler()
 async def on_message(in_msg: TargetMessage):
-    # print("mes", in_msg.text, in_msg.chat.type)
-
-    if in_msg.chat.type != TargetChatType.GROUP:
-        return
+    is_private = in_msg.chat.type == TargetChatType.PRIVATE
 
     async with make_db(PLATFORM) as db:
         msg = await make_message(db, in_msg, in_msg.chat, in_msg.from_user)
-        result = await handle_message(db, msg)
+        result = await handle_message(db, msg, is_private)
 
     if result:
         await in_msg.reply(result)
