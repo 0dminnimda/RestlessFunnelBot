@@ -3,10 +3,15 @@ from __future__ import annotations
 from bisect import bisect
 from datetime import datetime
 from enum import Enum
-from typing import List, Optional
+from typing import Any, List, Optional, cast
 
+from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.sql.schema import Column
 from sqlmodel import JSON, Field, Relationship, SQLModel
+
+
+def model_attr(attr: Any) -> InstrumentedAttribute:
+    return cast(InstrumentedAttribute, attr)
 
 
 class Platform(Enum):

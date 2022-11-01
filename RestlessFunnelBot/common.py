@@ -1,14 +1,8 @@
-from typing import Any, Optional, Type, cast
-
-from sqlalchemy.orm.attributes import InstrumentedAttribute
+from typing import Any, Optional
 
 from .database import DataBase
 from .mappers import map_model
-from .models import Chat, Message, Platform, User
-
-
-def model_attr(attr: Any) -> InstrumentedAttribute:
-    return cast(InstrumentedAttribute, attr)
+from .models import Chat, Message, Platform, User, model_attr
 
 
 async def list_messages(db: DataBase) -> str:
