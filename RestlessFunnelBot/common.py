@@ -21,13 +21,18 @@ async def list_accessible_chats(db: DataBase, user: User) -> str:
     return "List of accessible chats\n" + "\n".join(names)
 
 
-async def make_message(db: DataBase, in_msg: Any) -> Message:
-    mod = map_model(in_msg, recursive=True)
-    chat = mod["chat"] = await db.read_or_create(Chat, **mod["chat"])
-    author = mod["author"] = await db.read_or_create(User, **mod["author"])
-    author.add_chat(chat)
-    return db.create_no_add(Message, **mod)
+async def make_message(db: DataBase, in_msg: Any, chat: Any, author: Any) -> Message:
+    mod = map_model(in_msg)
 
+    chat = mod["chat"] = await db.read_or_create(Chat, **map_model(chat))
+    mod["chat_id"] = chat.id
+
+    author = mod["author"] = await db.read_or_create(User, **map_model(author))
+    mod["author_id"] = author.id
+
+    author.add_chat(chat)
+
+    return db.create_no_add(Message, **mod)
 
 async def handle_new_message(db: DataBase, in_msg: Any) -> Optional[str]:
     msg = await make_message(db, in_msg)
