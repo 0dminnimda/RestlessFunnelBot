@@ -60,15 +60,15 @@ async def on_ready():
 
 @bot.on.message()
 async def on_message(in_msg: TargetMessage):
-    if in_msg.peer_id == in_msg.from_id:
-        print("pravite")
-
     (chat,) = (await bot.api.messages.get_conversations_by_id(in_msg.peer_id)).items
     (author,) = await bot.api.users.get(in_msg.from_id)
 
+    # also works: is_private = in_msg.peer_id == in_msg.from_id
+    is_private = chat.peer.type == TargetChatType.USER
+
     async with make_db(PLATFORM) as db:
         msg = await make_message(db, in_msg, chat, author)
-        result = await handle_message(db, msg)
+        result = await handle_message(db, msg, is_private)
 
     if result:
         await in_msg.reply(result)
