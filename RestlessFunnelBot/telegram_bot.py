@@ -1,7 +1,7 @@
 import logging
 from typing import Any, Dict
 
-from aiogram import Bot, Dispatcher
+from aiogram import Bot, Dispatcher, executor
 from aiogram.types import Chat as TargetChat
 from aiogram.types import ChatType as TargetChatType
 from aiogram.types import Message as TargetMessage
@@ -72,4 +72,6 @@ async def run():
     finally:
         await bot.close()
 
-    # executor.start_polling(dp, skip_updates=True)
+
+def run_sync():
+    executor.start_polling(dp, skip_updates=False)
