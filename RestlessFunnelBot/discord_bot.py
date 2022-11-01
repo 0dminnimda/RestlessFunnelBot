@@ -9,7 +9,7 @@ from discord.message import Message as TargetMessage
 from discord.utils import MISSING
 
 from . import secrets
-from .common import handle_new_message
+from .common import handle_message, make_message
 from .database import make_db
 from .mappers import model_mapper
 from .models import DISCORD as PLATFORM
@@ -63,7 +63,8 @@ async def on_message(in_msg: TargetMessage):
         return
 
     async with make_db(PLATFORM) as db:
-        result = await handle_new_message(db, in_msg)
+        msg = await make_message(db, in_msg, in_msg.channel, in_msg.author)
+        result = await handle_message(db, msg)
 
     if result:
         await in_msg.channel.send(result, reference=in_msg)
