@@ -51,7 +51,7 @@ async def send_welcome(in_msg: TargetMessage):
 
 
 @dp.message_handler()
-async def collect_messages(in_msg: TargetMessage):
+async def on_message(in_msg: TargetMessage):
     # print("mes", in_msg.text, in_msg.chat.type)
 
     if in_msg.chat.type != TargetChatType.GROUP:
