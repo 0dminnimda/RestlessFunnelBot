@@ -12,10 +12,12 @@ from sqlmodel import JSON, Field, Relationship, SQLModel
 class Platform(Enum):
     TELEGRAM = "telegram"
     DISCORD = "discord"
+    VK = "vk"
 
 
 TELEGRAM = Platform.TELEGRAM
 DISCORD = Platform.DISCORD
+VK = Platform.VK
 
 
 class BaseModel(SQLModel):
