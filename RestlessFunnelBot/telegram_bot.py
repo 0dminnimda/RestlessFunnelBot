@@ -8,7 +8,7 @@ from aiogram.types import Message as TargetMessage
 from aiogram.types import User as TargetUser
 
 from . import secrets
-from .common import handle_new_message
+from .common import handle_message, make_message
 from .database import make_db
 from .mappers import model_mapper
 from .models import TELEGRAM as PLATFORM
@@ -58,7 +58,8 @@ async def on_message(in_msg: TargetMessage):
         return
 
     async with make_db(PLATFORM) as db:
-        result = await handle_new_message(db, in_msg)
+        msg = await make_message(db, in_msg, in_msg.chat, in_msg.from_user)
+        result = await handle_message(db, msg)
 
     if result:
         await in_msg.reply(result)
