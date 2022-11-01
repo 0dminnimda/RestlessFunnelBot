@@ -18,21 +18,17 @@ from .models import Chat, Message, User
 
 @model_mapper(TargetMessage, Message)
 def message_to_model(msg: TargetMessage) -> Dict[str, Any]:
-    author = msg.author
-    chat = msg.channel
     return dict(
         text=msg.content,
         timestamp=msg.created_at,
-        author=author,
-        author_id=author.id,
-        chat=chat,
-        chat_id=chat.id,
     )
 
 
 @model_mapper(TargetUser, User)
 def user_to_model(user: TargetUser) -> Dict[str, Any]:
-    return dict(id=user.id)
+    return dict(
+        id=user.id,
+    )
 
 
 @model_mapper(TargetChat, Chat)
@@ -40,7 +36,10 @@ def chat_to_model(chat: TargetChat) -> Dict[str, Any]:
     names = [chat.guild.name, chat.name]
     if chat.category:
         names.insert(1, chat.category.name)
-    return dict(id=chat.id, name=Chat.generate_name(*names))
+    return dict(
+        id=chat.id,
+        name=Chat.generate_name(*names),
+    )
 
 
 intents = discord.Intents.default()
