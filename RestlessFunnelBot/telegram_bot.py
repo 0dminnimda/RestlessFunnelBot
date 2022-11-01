@@ -44,11 +44,6 @@ bot = Bot(token=secrets.TELEGRAM_API_TOKEN)
 dp = Dispatcher(bot=bot)
 
 
-@dp.message_handler(commands=["start", "help"])
-async def send_welcome(in_msg: TargetMessage):
-    await in_msg.reply("Hi!\nI'm EchoBot!\nPowered by aiogram.")
-
-
 @dp.message_handler()
 async def on_message(in_msg: TargetMessage):
     is_private = in_msg.chat.type == TargetChatType.PRIVATE
