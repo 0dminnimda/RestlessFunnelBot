@@ -58,12 +58,14 @@ async def on_message(in_msg: TargetMessage):
     if in_msg.author == client.user:
         return
 
-    if in_msg.channel.type != TargetChatType.text:
+    if in_msg.channel.type not in {TargetChatType.text, TargetChatType.private}:
         return
+
+    is_private = in_msg.channel.type == TargetChatType.private
 
     async with make_db(PLATFORM) as db:
         msg = await make_message(db, in_msg, in_msg.channel, in_msg.author)
-        result = await handle_message(db, msg)
+        result = await handle_message(db, msg, is_private)
 
     if result:
         await in_msg.channel.send(result, reference=in_msg)
