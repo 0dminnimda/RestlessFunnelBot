@@ -35,12 +35,14 @@ async def make_message(db: DataBase, in_msg: Any, chat: Any, author: Any) -> Mes
     return db.create_no_add(Message, **mod)
 
 
-async def handle_message(db: DataBase, msg: Message) -> Optional[str]:
+async def handle_message(db: DataBase, msg: Message, is_private: bool) -> Optional[str]:
+    if not is_private:
+        db.add(msg)
+        return None
+
     if msg.text.startswith("/list"):
         return await list_messages(db)
-
     if msg.text.startswith("/chats"):
         return await list_accessible_chats(db, msg.author)
 
-    db.add(msg)
     return None
