@@ -17,26 +17,25 @@ from .models import Chat, Message, User
 
 @model_mapper(TargetMessage, Message)
 def message_to_model(msg: TargetMessage) -> Dict[str, Any]:
-    author = msg.from_user
-    chat = msg.chat
     return dict(
         text=msg.text,
         timestamp=msg.date,
-        author=author,
-        author_id=author.id,
-        chat=chat,
-        chat_id=chat.id,
     )
 
 
 @model_mapper(TargetUser, User)
 def user_to_model(user: TargetUser) -> Dict[str, Any]:
-    return dict(id=user.id)
+    return dict(
+        id=user.id,
+    )
 
 
 @model_mapper(TargetChat, Chat)
 def chat_to_model(chat: TargetChat) -> Dict[str, Any]:
-    return dict(id=chat.id, name=Chat.generate_name(chat.title))
+    return dict(
+        id=chat.id,
+        name=Chat.generate_name(chat.title),
+    )
 
 
 logging.basicConfig(level=logging.INFO)
