@@ -2,10 +2,12 @@ import logging
 from typing import Any, Dict, Optional
 
 import discord
-from discord.abc import GuildChannel as TargetChat
+from discord.abc import GuildChannel as TargetPublicChat
+from discord.channel import DMChannel as TargetPrivateChat
 from discord.enums import ChannelType as TargetChatType
-from discord.member import Member as TargetUser
 from discord.message import Message as TargetMessage
+from discord.user import BaseUser as TargetUser
+from discord.user import _UserTag as TargetUserTag
 from discord.utils import MISSING
 
 from . import secrets
@@ -24,21 +26,29 @@ def message_to_model(msg: TargetMessage) -> Dict[str, Any]:
     )
 
 
-@model_mapper(TargetUser, User)
+@model_mapper(TargetUserTag, User)
 def user_to_model(user: TargetUser) -> Dict[str, Any]:
     return dict(
         id=user.id,
     )
 
 
-@model_mapper(TargetChat, Chat)
-def chat_to_model(chat: TargetChat) -> Dict[str, Any]:
+@model_mapper(TargetPublicChat, Chat)
+def public_chat_to_model(chat: TargetPublicChat) -> Dict[str, Any]:
     names = [chat.guild.name, chat.name]
     if chat.category:
         names.insert(1, chat.category.name)
     return dict(
         id=chat.id,
         name=Chat.generate_name(*names),
+    )
+
+
+@model_mapper(TargetPrivateChat, Chat)
+def private_chat_to_model(chat: TargetPrivateChat) -> Dict[str, Any]:
+    return dict(
+        id=chat.id,
+        name=Chat.generate_name(chat.me.display_name),
     )
 
 
