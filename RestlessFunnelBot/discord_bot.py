@@ -69,12 +69,12 @@ client = discord.Client(intents=intents)
 
 
 @client.event
-async def on_ready():
+async def on_ready() -> None:
     print(f"We have logged in as {client.user}")
 
 
 @client.event
-async def on_message(in_msg: TargetMessage):
+async def on_message(in_msg: TargetMessage) -> None:
     if in_msg.author == client.user:
         return
 
@@ -85,7 +85,7 @@ async def on_message(in_msg: TargetMessage):
     await handle_message(PLATFORM, in_msg, in_msg.channel, in_msg.author, is_private)
 
 
-async def run(reconnect: bool = True):
+async def run(reconnect: bool = True) -> None:
     log_handler: Optional[logging.Handler] = MISSING
     log_formatter: logging.Formatter = MISSING
     log_level: int = MISSING
@@ -103,5 +103,5 @@ async def run(reconnect: bool = True):
         await client.start(secrets.DISCORD_API_TOKEN, reconnect=reconnect)
 
 
-def run_sync():
+def run_sync() -> None:
     client.run(secrets.DISCORD_API_TOKEN)

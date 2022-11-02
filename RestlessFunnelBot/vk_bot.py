@@ -61,7 +61,7 @@ GROUP_ID = -1
 GROUP_NAME = "<unknown>"
 
 
-async def on_ready():
+async def on_ready() -> None:
     global GROUP_ID, GROUP_NAME
     group = (await bot.api.groups.get_by_id())[0]
     GROUP_ID = group.id
@@ -69,7 +69,7 @@ async def on_ready():
 
 
 @bot.on.message()
-async def on_message(in_msg: TargetMessage):
+async def on_message(in_msg: TargetMessage) -> None:
     (chat,) = (await bot.api.messages.get_conversations_by_id(in_msg.peer_id)).items
     (author,) = await bot.api.users.get(in_msg.from_id)
 
@@ -78,11 +78,11 @@ async def on_message(in_msg: TargetMessage):
     await handle_message(PLATFORM, in_msg, chat, author, is_private)
 
 
-async def run():
+async def run() -> None:
     await on_ready()
     await bot.run_polling()
 
 
-def run_sync():
+def run_sync() -> None:
     bot.loop_wrapper.on_startup.append(on_ready())
     bot.run_forever()

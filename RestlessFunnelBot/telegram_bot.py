@@ -55,17 +55,17 @@ dp = Dispatcher(bot=bot)
 
 
 @dp.message_handler()
-async def on_message(in_msg: TargetMessage):
+async def on_message(in_msg: TargetMessage) -> None:
     is_private = in_msg.chat.type == TargetChatType.PRIVATE
     await handle_message(PLATFORM, in_msg, in_msg.chat, in_msg.from_user, is_private)
 
 
-async def run():
+async def run() -> None:
     try:
         await dp.start_polling()
     finally:
         await bot.close()
 
 
-def run_sync():
+def run_sync() -> None:
     executor.start_polling(dp, skip_updates=False)
