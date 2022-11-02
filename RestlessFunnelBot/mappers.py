@@ -18,7 +18,7 @@ def model_mapper(type: Type[T], to_type: Type[M]) -> Callable[[Mapper], Mapper]:
 
 
 def get_mapped_type(type: Type[Any]) -> Optional[Type[Any]]:
-    intersection = _model_mappers.keys() & ((type,) + type.__bases__)
+    intersection = _model_mappers.keys() & type.__mro__
     if len(intersection) == 0:
         return None
     elif len(intersection) == 1:
