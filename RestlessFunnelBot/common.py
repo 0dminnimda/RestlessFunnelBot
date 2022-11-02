@@ -44,22 +44,8 @@ async def accessible_chats(bot: Bot, text: str) -> None:
 
 
 auth_keys: Dict[int, str] = {}
-# auth_keys: Set[str] = set()
-# auth_key_timestamps: List[Tuple[str, int]] = []
 auth_key_info: Dict[str, Tuple[float, int]] = {}
 KEY_LIFE_TIME = 60
-
-
-# class KeyTimestamp:
-#     key: str
-#     timestamp: int
-
-#     def __init__(self, key: str, timestamp: int) -> None:
-#         self.key = key
-#         self.timestamp = timestamp
-
-#     def __hash__(self) -> int:
-#         return hash(self.key)
 
 
 def delete_outdated_auth_keys(max_number_of_elements: int = 256):
@@ -90,20 +76,6 @@ def delete_outdated_auth_keys(max_number_of_elements: int = 256):
         auth_key_info.pop(key, None)
 
 
-def get_user_auth_key(id: int) -> Optional[str]:
-    delete_outdated_auth_keys()
-    return auth_keys.get(id)
-
-    # key = auth_keys.get(id)
-    # if key is not None:
-    #     timestamp = auth_key_info[key]
-    #     if time() - timestamp > KEY_LIFE_TIME:
-    #         del auth_keys[id]
-    #         del auth_key_info[key]
-    #         return None
-    # return key
-
-
 def set_auth_key(id: int, key: str) -> str:
     auth_keys[id] = key
     auth_key_info[key] = (time(), id)
@@ -114,7 +86,6 @@ def set_auth_key(id: int, key: str) -> str:
 async def link(bot: Bot, text: str) -> None:
     text = text.strip(" ")
     user_id = cast(int, bot.msg.author.id)
-    # key = get_user_auth_key(user_id)
     delete_outdated_auth_keys()
 
     if text:
