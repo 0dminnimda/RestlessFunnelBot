@@ -50,9 +50,10 @@ async def make_message(
     fields = map_model(in_msg)
 
     chat = fields["chat"] = await db.read_or_create(Chat, **map_model(chat))
-    fields["chat_id"] = chat.id
-
     author = fields["author"] = await db.read_or_create(User, **map_model(author))
+    await db.flush()
+
+    fields["chat_id"] = chat.id
     fields["author_id"] = author.id
 
     msg = db.create_no_add(Message, **fields)

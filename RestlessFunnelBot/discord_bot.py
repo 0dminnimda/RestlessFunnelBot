@@ -29,7 +29,7 @@ def message_to_model(msg: TargetMessage) -> Dict[str, Any]:
 @model_mapper(TargetUserTag, User)
 def user_to_model(user: TargetUser) -> Dict[str, Any]:
     return dict(
-        id=user.id,
+        target_id=user.id,
     )
 
 
@@ -39,7 +39,7 @@ def public_chat_to_model(chat: TargetPublicChat) -> Dict[str, Any]:
     if chat.category:
         names.insert(1, chat.category.name)
     return dict(
-        id=chat.id,
+        target_id=chat.id,
         name=Chat.generate_name(*names),
     )
 
@@ -47,7 +47,7 @@ def public_chat_to_model(chat: TargetPublicChat) -> Dict[str, Any]:
 @model_mapper(TargetPrivateChat, Chat)
 def private_chat_to_model(chat: TargetPrivateChat) -> Dict[str, Any]:
     return dict(
-        id=chat.id,
+        target_id=chat.id,
         name=Chat.generate_name(chat.me.display_name),
     )
 

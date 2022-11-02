@@ -38,11 +38,11 @@ VK = Platform.VK
 
 
 class BaseModel(SQLModel):
+    id: Optional[int] = Field(default=None, primary_key=True)
     platform: Platform
 
 
 class Message(BaseModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
     text: str
     timestamp: datetime
     author_id: int = Field(foreign_key="user.id")
@@ -55,7 +55,7 @@ NAME_SEPARATOR = chr(1)
 
 
 class Chat(BaseModel, table=True):
-    id: int = Field(primary_key=True)
+    target_id: int
     name: str
 
     @staticmethod
@@ -67,10 +67,11 @@ class Chat(BaseModel, table=True):
 
 
 class User(BaseModel, table=True):
-    id: int = Field(primary_key=True)
+    target_id: int
     accessible_chats: List[int] = Field(default_factory=list, sa_column=Column(JSON))
 
     def add_chat(self, chat: Chat) -> None:
+        assert chat.id is not None
         ind = bisect(self.accessible_chats, chat.id)
         if not (ind > 0 and self.accessible_chats[ind - 1] == chat.id):
             # otherwise list is not updated in the db

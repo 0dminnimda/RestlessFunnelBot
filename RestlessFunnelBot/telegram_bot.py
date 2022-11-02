@@ -26,14 +26,14 @@ def message_to_model(msg: TargetMessage) -> Dict[str, Any]:
 @model_mapper(TargetUser, User)
 def user_to_model(user: TargetUser) -> Dict[str, Any]:
     return dict(
-        id=user.id,
+        target_id=user.id,
     )
 
 
 @model_mapper(TargetChat, Chat)
 def chat_to_model(chat: TargetChat) -> Dict[str, Any]:
     return dict(
-        id=chat.id,
+        target_id=chat.id,
         name=Chat.generate_name(chat.title or "RestlessFunnelBot"),
     )
 

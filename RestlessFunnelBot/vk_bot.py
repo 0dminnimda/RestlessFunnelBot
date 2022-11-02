@@ -27,7 +27,7 @@ def message_to_model(msg: TargetMessage) -> Dict[str, Any]:
 @model_mapper(TargetUser, User)
 def user_to_model(user: TargetUser) -> Dict[str, Any]:
     return dict(
-        id=user.id,
+        target_id=user.id,
     )
 
 
@@ -41,7 +41,7 @@ def chat_to_model(chat: TargetChat) -> Dict[str, Any]:
         title = f"<Chat ({chat.peer.id}) name not found>"
 
     return dict(
-        id=chat.peer.id,
+        target_id=chat.peer.id,
         name=Chat.generate_name(title),
     )
 
