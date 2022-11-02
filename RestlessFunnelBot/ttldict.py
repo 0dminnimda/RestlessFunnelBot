@@ -20,26 +20,6 @@ V = TypeVar("V")
 T = TypeVar("T", bound=Any)
 
 
-# class TTLKey(Generic[K]):
-#     __slots__ = "key", "expires"
-
-#     key: K
-#     expires: float
-
-#     def __init__(self, key: K, ttl: float) -> None:
-#         self.key = key
-#         self.expires = time() + ttl
-
-#     def __eq__(self, other: Any) -> bool:
-#         return self.key == other
-
-#     def __hash__(self) -> int:
-#         return hash(self.key)
-
-
-# _Key = TTLKey[K]
-
-
 class TTLValue(Generic[V]):
     __slots__ = "value", "expires"
 
@@ -54,12 +34,6 @@ class TTLValue(Generic[V]):
         names = ["value", "expires"]
         args = [f"{name}={getattr(self, name)}" for name in names]
         return type(self).__name__ + "(" + ", ".join(args) + ")"
-
-    # def __eq__(self, other: Any) -> bool:
-    #     return self.value == other
-
-    # def __hash__(self) -> int:
-    #     return hash(self.value)
 
 
 _Val = TTLValue[V]
@@ -141,40 +115,3 @@ class TTLDict(Dict[K, V]):
                 break
 
         return [cast(_Val, self.pop(key)).value for key in keys]
-
-
-# auth_ids: Set[int] = set()
-# auth_keys: Dict[str, Tuple[float, int]] = {}
-# KEY_LIFE_TIME = 60
-
-
-# def delete_outdated_auth_keys(max_number_of_elements: int = 256):
-#     """
-#     This function relies on the fact that dict is ordered.
-#     More often calls -> faster execution time.
-#     Complexity is ~O(n*sigmiod(x)) where n is number of keys
-#     and x is how much time passed from the last update.
-#     """
-
-#     keys = []
-
-#     current_time = time()
-#     for key, (timestamp, id) in auth_keys.items():
-#         if current_time - timestamp <= KEY_LIFE_TIME:
-#             break
-
-#         keys.append(key)
-#         auth_ids.remove(id)
-
-#         max_number_of_elements -= 1
-#         if max_number_of_elements <= 0:
-#             break
-
-#     for key in keys:
-#         auth_keys.pop(key, None)
-
-
-# def set_auth_key(id: int, key: str) -> str:
-#     auth_ids[id] = key
-#     auth_keys[key] = (time(), id)
-#     return key
