@@ -1,11 +1,12 @@
 from typing import Any, Optional
 
-from .database import DataBase
+from .database import DataBase, make_db
 from .mappers import map_model
+from .messenger import answer_to, reply_to
 from .models import Chat, Message, Platform, User, model_attr
 
 
-async def list_messages(db: DataBase) -> str:
+async def all_messages(db: DataBase, user: User) -> str:
     messages = []
     for msg in await db.read_all(Message):
         messages.append("-" * 50 + f"\n{msg.id}: {msg.text}")
@@ -15,42 +16,55 @@ async def list_messages(db: DataBase) -> str:
 CHAT_SEP = "/"
 
 
-async def list_accessible_chats(db: DataBase, user: User) -> str:
+async def accessible_chats(db: DataBase, user: User) -> str:
     chats = await db.read_all(Chat, model_attr(Chat.id).in_(user.accessible_chats))
     names = [f"{i+1} {chat.represent_name(CHAT_SEP)}" for i, chat in enumerate(chats)]
     return "List of accessible chats\n" + "\n".join(names)
 
 
-async def make_message(db: DataBase, in_msg: Any, chat: Any, author: Any) -> Message:
-    mod = map_model(in_msg)
-
-    chat = mod["chat"] = await db.read_or_create(Chat, **map_model(chat))
-    mod["chat_id"] = chat.id
-
-    author = mod["author"] = await db.read_or_create(User, **map_model(author))
-    mod["author_id"] = author.id
-
-    return db.create_no_add(Message, **mod)
-
-
-async def greet():
+async def greet(db: DataBase, user: User):
     return (
         "Hi, I'm RestlessFunnelBot!\n"
         "I listen to others, and then I retell everything to you 🤗\n"
     )
 
 
-async def handle_message(db: DataBase, msg: Message, is_private: bool) -> Optional[str]:
+replies = {
+    "/list": all_messages,
+    "/chats": accessible_chats,
+    "/start": greet,
+    "/help": greet,
+}
+
+
+async def reply_to_message(db: DataBase, in_msg: Any, msg: Message) -> None:
+    reply = replies.get(msg.text)
+    if reply is not None:
+        await answer_to(in_msg, await reply(db, msg.author))
+
+
+async def make_message(
+    db: DataBase, in_msg: Any, chat: Any, author: Any, is_private: bool
+) -> Message:
+    fields = map_model(in_msg)
+
+    chat = fields["chat"] = await db.read_or_create(Chat, **map_model(chat))
+    fields["chat_id"] = chat.id
+
+    author = fields["author"] = await db.read_or_create(User, **map_model(author))
+    fields["author_id"] = author.id
+
+    msg = db.create_no_add(Message, **fields)
     if not is_private:
-        msg.author.add_chat(msg.chat)
+        author.add_chat(chat)
         db.add(msg)
-        return None
+    return msg
 
-    if msg.text.startswith("/list"):
-        return await list_messages(db)
-    if msg.text.startswith("/chats"):
-        return await list_accessible_chats(db, msg.author)
-    if msg.text.startswith("/start") or msg.text.startswith("/help"):
-        return await greet()
 
-    return None
+async def handle_message(
+    platform: Platform, in_msg: Any, chat: Any, author: Any, is_private: bool
+) -> None:
+    async with make_db(platform) as db:
+        msg = await make_message(db, in_msg, chat, author, is_private)
+        if is_private:
+            await reply_to_message(db, in_msg, msg)

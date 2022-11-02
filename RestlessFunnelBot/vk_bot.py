@@ -8,8 +8,7 @@ from vkbottle_types.objects import MessagesConversationPeerType as TargetChatTyp
 from vkbottle_types.objects import UsersUserFull as TargetUser
 
 from . import secrets
-from .common import handle_message, make_message
-from .database import make_db
+from .common import handle_message
 from .mappers import model_mapper
 from .messenger import answer_function, reply_function
 from .models import VK as PLATFORM
@@ -76,15 +75,7 @@ async def on_message(in_msg: TargetMessage):
 
     # also works: is_private = in_msg.peer_id == in_msg.from_id
     is_private = chat.peer.type == TargetChatType.USER
-
-    async with make_db(PLATFORM) as db:
-        msg = await make_message(db, in_msg, chat, author)
-        result = await handle_message(db, msg, is_private)
-
-    if result:
-        await in_msg.reply(result)
-
-    # await in_msg.answer(in_msg.text)
+    await handle_message(PLATFORM, in_msg, chat, author, is_private)
 
 
 async def run():

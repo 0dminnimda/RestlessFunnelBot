@@ -8,8 +8,7 @@ from aiogram.types import Message as TargetMessage
 from aiogram.types import User as TargetUser
 
 from . import secrets
-from .common import handle_message, make_message
-from .database import make_db
+from .common import handle_message
 from .mappers import model_mapper
 from .messenger import answer_function, reply_function
 from .models import TELEGRAM as PLATFORM
@@ -58,15 +57,7 @@ dp = Dispatcher(bot=bot)
 @dp.message_handler()
 async def on_message(in_msg: TargetMessage):
     is_private = in_msg.chat.type == TargetChatType.PRIVATE
-
-    async with make_db(PLATFORM) as db:
-        msg = await make_message(db, in_msg, in_msg.chat, in_msg.from_user)
-        result = await handle_message(db, msg, is_private)
-
-    if result:
-        await in_msg.reply(result)
-
-    # await in_msg.answer(in_msg.text)
+    await handle_message(PLATFORM, in_msg, in_msg.chat, in_msg.from_user, is_private)
 
 
 async def run():
