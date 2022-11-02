@@ -33,3 +33,10 @@ def answer_function(type: Type[Any]) -> Callable[[Func], Func]:
 
 async def answer_to(msg: Any, text: str) -> None:
     await _answer_functions[type(msg)](msg, text)
+
+
+class Messenger:
+    target_message: Any = None
+
+    async def send(self, text: str) -> None:
+        await answer_to(self.target_message, text)
