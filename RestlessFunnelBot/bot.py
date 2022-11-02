@@ -10,8 +10,6 @@ MapToFunc = Dict[Type[T], SendFunc]
 CommandHandler = Callable[["Bot", str], Awaitable[None]]
 
 
-# COMMAND_REGEXP = r"(?:/(?P<command>\w+) )?\s*(?P<text>.+)"
-# COMMAND_REGEXP = r"(?:/(\w+)\s*)?(.+)"
 COMMAND_REGEXP = r"(?:/(\S+))? *(.*)"
 
 
