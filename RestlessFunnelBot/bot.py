@@ -1,5 +1,5 @@
 import re
-from typing import Any, Awaitable, Callable, Dict, Protocol, Type, TypeVar
+from typing import Any, Awaitable, Callable, Dict, Optional, Type, TypeVar
 
 from .database import DataBase
 from .models import Message
@@ -7,10 +7,13 @@ from .models import Message
 T = TypeVar("T", bound=Any)
 SendFunc = Callable[[T, str, bool], Awaitable[None]]
 MapToFunc = Dict[Type[T], SendFunc]
+
 CommandHandler = Callable[["Bot", str], Awaitable[None]]
+CommandMap = Dict[str, CommandHandler]
 
 
 COMMAND_REGEXP = r"(?:/(\S+))? *(.*)"
+DEFAULT_COMMAND = chr(1).join("$default$")
 
 
 class Bot:
@@ -22,6 +25,7 @@ class Bot:
     def __init__(self) -> None:
         self.target_message = None
         self.command_pattern = re.compile(COMMAND_REGEXP)
+        self.default_handler = None
 
     send_functions: MapToFunc = {}
 
@@ -36,12 +40,15 @@ class Bot:
         msg = self.target_message
         await self.send_functions[type(msg)](msg, text, mention)
 
-    commands: Dict[str, CommandHandler] = {}
+    commands: CommandMap = {}
+    default_handler: Optional[CommandHandler]
 
     def command(self, *names: str) -> Callable[[CommandHandler], CommandHandler]:
         def inner(f: CommandHandler) -> CommandHandler:
             for name in names:
                 self.commands[name] = f
+                if name == DEFAULT_COMMAND:
+                    self.default_handler = f
             return f
 
         return inner
