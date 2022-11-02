@@ -22,9 +22,11 @@ def from_moscow_tz(dt: datetime) -> datetime:
 
 async def all_messages(db: DataBase, user: User) -> str:
     messages = []
+    # sep = " ".join("-" * 25) + "\n"
     for msg in await db.read_all(Message):
-        messages.append("-" * 50 + f"\n{msg.id}: {msg.text}")
-    return "List of all messages\n" + "\n\n".join(messages)
+        date = to_moscow_tz(msg.timestamp).strftime(TIME_FORMAT)
+        messages.append(f"{msg.id}) {date}:\n{msg.text}\n")
+    return "List of all messages\n" + "\n".join(messages)
 
 
 CHAT_SEP = "/"
