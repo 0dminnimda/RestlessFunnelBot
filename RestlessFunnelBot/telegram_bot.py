@@ -11,6 +11,7 @@ from . import secrets
 from .common import handle_message, make_message
 from .database import make_db
 from .mappers import model_mapper
+from .messenger import answer_function, reply_function
 from .models import TELEGRAM as PLATFORM
 from .models import Chat, Message, User
 
@@ -36,6 +37,16 @@ def chat_to_model(chat: TargetChat) -> Dict[str, Any]:
         id=chat.id,
         name=Chat.generate_name(chat.title or "RestlessFunnelBot"),
     )
+
+
+@reply_function(TargetMessage)
+async def reply_to(msg: TargetMessage, text: str) -> None:
+    await msg.reply(text)
+
+
+@answer_function(TargetMessage)
+async def answer_to(msg: TargetMessage, text: str) -> None:
+    await msg.answer(text)
 
 
 logging.basicConfig(level=logging.INFO)
