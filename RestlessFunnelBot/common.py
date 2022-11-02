@@ -38,7 +38,7 @@ async def make_message(db: DataBase, in_msg: Any, chat: Any, author: Any) -> Mes
 async def greet():
     return (
         "Hi, I'm RestlessFunnelBot!\n"
-        "I listen to others, and then I retell it to you 🤗\n"
+        "I listen to others, and then I retell everything to you 🤗\n"
     )
 
 
