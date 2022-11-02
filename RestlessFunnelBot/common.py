@@ -1,52 +1,83 @@
-from datetime import datetime, timedelta, timezone
-from typing import Any, Optional
+import re
+from typing import Any, Dict, Optional, Tuple, Callable, Awaitable
 
 from .database import DataBase, make_db
 from .mappers import map_model
-from .messenger import answer_to, reply_to
+from .messenger import Messenger
 from .models import Chat, Message, Platform, User, model_attr, to_moscow_tz
+
+
+# COMMAND_PATTERN = r"(?:/(?P<command>\w+) )?\s*(?P<text>.+)"
+# COMMAND_PATTERN = r"(?:/(\w+)\s*)?(.+)"
+COMMAND_PATTERN = r"(?:/(\S+))? *(.*)"
+COMMAND_REGEXP = re.compile(COMMAND_PATTERN)
+
+
+CommandHandler = Callable[["Bot", str], Awaitable[None]]
+
+
+class Bot(Messenger):
+    db: DataBase
+    msg: Message
+
+    commands: Dict[str, CommandHandler] = {}
+
+    def command(self, *names: str) -> Callable[[CommandHandler], CommandHandler]:
+        def inner(f: CommandHandler) -> CommandHandler:
+            for name in names:
+                self.commands[name] = f
+            return f
+        return inner
+
+    async def reply(self, db: DataBase, in_msg: Any, msg: Message) -> None:
+        self.target_message = in_msg
+        self.db = db
+        self.msg = msg
+
+        match = COMMAND_REGEXP.match(msg.text)
+        if match is None:
+            return
+        command, text = match.groups()
+
+        func = self.commands.get(command)
+        if func is not None:
+            await func(self, text)
+
+
+bot = Bot()
 
 
 TIME_FORMAT = "%d %B %Y - %H:%M:%S (%Z)"
 
 
-
-async def all_messages(db: DataBase, user: User) -> str:
+@bot.command("list")
+async def all_messages(bot: Bot, text: str) -> None:
     messages = []
-    for msg in await db.read_all(Message):
+    for msg in await bot.db.read_all(Message):
         date = to_moscow_tz(msg.timestamp).strftime(TIME_FORMAT)
         messages.append(f"{msg.id}) {date}:\n{msg.text}\n")
-    return "List of all messages\n" + "\n".join(messages)
+    await bot.send("List of all messages\n" + "\n".join(messages))
 
 
 CHAT_SEP = "/"
 
 
-async def accessible_chats(db: DataBase, user: User) -> str:
-    chats = await db.read_all(Chat, model_attr(Chat.id).in_(user.accessible_chats))
-    names = [f"{i+1} {chat.represent_name(CHAT_SEP)}" for i, chat in enumerate(chats)]
-    return "List of accessible chats\n" + "\n".join(names)
+@bot.command("chats")
+async def accessible_chats(bot: Bot, text: str) -> None:
+    criteria = model_attr(Chat.id).in_(bot.msg.author.accessible_chats)
+    chats = await bot.db.read_all(Chat, criteria)
+    names = [
+        f"{i+1} {chat.represent_name(CHAT_SEP)}" for i, chat in enumerate(chats)
+    ]
+    await bot.send("List of accessible chats\n" + "\n".join(names))
 
 
-async def greet(db: DataBase, user: User):
-    return (
+@bot.command("start", "help")
+async def greet(bot: Bot, text: str) -> None:
+    await bot.send(
         "Hi, I'm RestlessFunnelBot!\n"
         "I listen to others, and then I retell everything to you 🤗\n"
     )
-
-
-replies = {
-    "/list": all_messages,
-    "/chats": accessible_chats,
-    "/start": greet,
-    "/help": greet,
-}
-
-
-async def reply_to_message(db: DataBase, in_msg: Any, msg: Message) -> None:
-    reply = replies.get(msg.text)
-    if reply is not None:
-        await answer_to(in_msg, await reply(db, msg.author))
 
 
 async def make_message(
@@ -73,4 +104,4 @@ async def handle_message(
     async with make_db(platform) as db:
         msg = await make_message(db, in_msg, chat, author, is_private)
         if is_private:
-            await reply_to_message(db, in_msg, msg)
+            await bot.reply(db, in_msg, msg)
