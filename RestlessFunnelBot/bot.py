@@ -59,11 +59,14 @@ class Bot:
         self.msg = msg
 
         match = self.command_pattern.match(msg.text)
-        if match is None:
-            return
-        command, text = match.groups()
 
-        func = self.commands.get(command)
+        if match is None:
+            text = msg.text
+            func = self.default_handler
+        else:
+            command, text = match.groups()
+            func = self.commands.get(command, self.default_handler)
+
         if func is not None:
             await func(self, text)
 
