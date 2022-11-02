@@ -57,15 +57,16 @@ async def answer_to(msg: TargetMessage, text: str) -> None:
 
 
 bot = Bot(token=secrets.VK_API_TOKEN)
-GROUP_ID = -1
-GROUP_NAME = "<unknown>"
+GROUP_ID: int = -1
+GROUP_NAME: str = "<unknown>"
 
 
 async def on_ready() -> None:
     global GROUP_ID, GROUP_NAME
     group = (await bot.api.groups.get_by_id())[0]
     GROUP_ID = group.id
-    GROUP_NAME = group.name
+    if group.name is not None:
+        GROUP_NAME = group.name
 
 
 @bot.on.message()
