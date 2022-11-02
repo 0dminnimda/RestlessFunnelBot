@@ -30,8 +30,6 @@ async def make_message(db: DataBase, in_msg: Any, chat: Any, author: Any) -> Mes
     author = mod["author"] = await db.read_or_create(User, **map_model(author))
     mod["author_id"] = author.id
 
-    author.add_chat(chat)
-
     return db.create_no_add(Message, **mod)
 
 
@@ -44,6 +42,7 @@ async def greet():
 
 async def handle_message(db: DataBase, msg: Message, is_private: bool) -> Optional[str]:
     if not is_private:
+        msg.author.add_chat(msg.chat)
         db.add(msg)
         return None
 
