@@ -8,11 +8,11 @@ from aiogram.types import Message as TargetMessage
 from aiogram.types import User as TargetUser
 
 from . import secrets
-from .common import handle_message, from_moscow_tz
+from .common import handle_message
 from .mappers import model_mapper
 from .messenger import answer_function, reply_function
 from .models import TELEGRAM as PLATFORM
-from .models import Chat, Message, User
+from .models import Chat, Message, User, from_moscow_tz
 
 
 @model_mapper(TargetMessage, Message)

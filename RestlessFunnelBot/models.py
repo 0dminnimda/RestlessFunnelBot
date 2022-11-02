@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from bisect import bisect
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 from typing import Any, List, Optional, cast
 
@@ -12,6 +12,18 @@ from sqlmodel import JSON, Field, Relationship, SQLModel
 
 def model_attr(attr: Any) -> InstrumentedAttribute:
     return cast(InstrumentedAttribute, attr)
+
+
+TZ_UTC = timezone.utc
+TZ_MOSCOW = timezone(timedelta(hours=3))
+
+
+def to_moscow_tz(dt: datetime) -> datetime:
+    return dt.replace(tzinfo=TZ_UTC).astimezone(TZ_MOSCOW)
+
+
+def from_moscow_tz(dt: datetime) -> datetime:
+    return dt.replace(tzinfo=TZ_MOSCOW).astimezone(TZ_UTC)
 
 
 class Platform(Enum):
