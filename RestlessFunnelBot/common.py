@@ -1,6 +1,7 @@
-from typing import Any, Dict, Tuple
+from time import time
+from typing import Any, Dict, Optional, Tuple, cast, Set, List
 
-from .bot import Bot, bot, DEFAULT_COMMAND
+from .bot import DEFAULT_COMMAND, Bot, bot
 from .database import DataBase, make_db
 from .mappers import map_model
 from .models import Chat, Message, Platform, User, model_attr, to_moscow_tz
@@ -42,6 +43,106 @@ async def accessible_chats(bot: Bot, text: str) -> None:
     await bot.send("List of accessible chats\n" + "\n".join(names))
 
 
+auth_keys: Dict[int, str] = {}
+# auth_keys: Set[str] = set()
+# auth_key_timestamps: List[Tuple[str, int]] = []
+auth_key_info: Dict[str, Tuple[float, int]] = {}
+KEY_LIFE_TIME = 60
+
+
+# class KeyTimestamp:
+#     key: str
+#     timestamp: int
+
+#     def __init__(self, key: str, timestamp: int) -> None:
+#         self.key = key
+#         self.timestamp = timestamp
+
+#     def __hash__(self) -> int:
+#         return hash(self.key)
+
+
+def delete_outdated_auth_keys(max_number_of_elements: int = 256):
+    """
+    This function relies on the fact that dict is ordered.
+    More often calls -> faster execution time.
+    Complexity is ~O(n*sigmiod(x)) where n is number of keys
+    and x is how much time passed from the last update.
+    """
+
+    keys = set()
+
+    current_time = time()
+    for key, (timestamp, id) in auth_key_info.items():
+        if current_time - timestamp <= KEY_LIFE_TIME:
+            break
+
+        keys.add(key)
+        key_ = auth_keys.pop(id, None)
+        if key_ is not None:
+            keys.add(key_)
+
+        max_number_of_elements -= 1
+        if max_number_of_elements <= 0:
+            break
+
+    for key in keys:
+        auth_key_info.pop(key, None)
+
+
+def get_user_auth_key(id: int) -> Optional[str]:
+    delete_outdated_auth_keys()
+    return auth_keys.get(id)
+
+    # key = auth_keys.get(id)
+    # if key is not None:
+    #     timestamp = auth_key_info[key]
+    #     if time() - timestamp > KEY_LIFE_TIME:
+    #         del auth_keys[id]
+    #         del auth_key_info[key]
+    #         return None
+    # return key
+
+
+def set_auth_key(id: int, key: str) -> str:
+    auth_keys[id] = key
+    auth_key_info[key] = (time(), id)
+    return key
+
+
+@bot.command("link")
+async def link(bot: Bot, text: str) -> None:
+    text = text.strip(" ")
+    user_id = cast(int, bot.msg.author.id)
+    # key = get_user_auth_key(user_id)
+    delete_outdated_auth_keys()
+
+    if text:
+        other_user_id = auth_key_info.get(text)
+        if other_user_id is None:
+            await bot.send("This secret code is invalid :(")
+            # await bot.send("No such secret code found :(")
+        else:
+            await bot.send("Successfully linked!")
+            await bot.send(f"DEBUG: with {other_user_id[1]}")
+            auth_keys.pop(user_id, None)
+            auth_key_info.pop(text, None)
+    else:
+        key = auth_keys.get(user_id)
+        if key is None:
+            key = set_auth_key(user_id, f"ur-mom-{user_id}")
+            await bot.send(
+                "With this command you link your account to another account\n"
+                "\n"
+                f"I created a temporary a secret code for you: {key}\n"
+                f"Hurry, it will last only for {KEY_LIFE_TIME} seconds\n"
+                "\n"
+                "To use it log into another account and send this message:"
+            )
+            await bot.send(f"`/link {key}`")
+        else:
+            await bot.send("You already have generated a secret code")
+            await bot.send(f"`/link {key}`")
 
 
 async def make_message(
