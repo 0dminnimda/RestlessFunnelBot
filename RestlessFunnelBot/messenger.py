@@ -1,12 +1,6 @@
 from typing import Any, Awaitable, Callable, Dict, Type, TypeVar, Protocol
 
 
-# T = TypeVar("T", bound=Any, contravariant=True)
-
-
-# class Func(Protocol[T]):
-#     async def __call__(self, msg: T, text: str, mention: bool = ...) -> None:
-#         ...
 
 
 T = TypeVar("T", bound=Any)
