@@ -11,9 +11,9 @@ from discord.user import _UserTag as TargetUserTag
 from discord.utils import MISSING
 
 from . import secrets
+from .bot import bot as main_bot
 from .common import handle_message
 from .mappers import model_mapper
-from .messenger import send_function
 from .models import DISCORD as PLATFORM
 from .models import Chat, Message, User
 
@@ -52,7 +52,7 @@ def private_chat_to_model(chat: TargetPrivateChat) -> Dict[str, Any]:
     )
 
 
-@send_function(TargetMessage)
+@main_bot.send_function(TargetMessage)
 async def send(msg: TargetMessage, text: str, mention: bool) -> None:
     if mention:
         await msg.channel.send(text, reference=msg)

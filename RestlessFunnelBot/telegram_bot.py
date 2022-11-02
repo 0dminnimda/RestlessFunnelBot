@@ -8,9 +8,9 @@ from aiogram.types import Message as TargetMessage
 from aiogram.types import User as TargetUser
 
 from . import secrets
+from .bot import bot as main_bot
 from .common import handle_message
 from .mappers import model_mapper
-from .messenger import send_function
 from .models import TELEGRAM as PLATFORM
 from .models import Chat, Message, User, from_moscow_tz
 
@@ -38,7 +38,7 @@ def chat_to_model(chat: TargetChat) -> Dict[str, Any]:
     )
 
 
-@send_function(TargetMessage)
+@main_bot.send_function(TargetMessage)
 async def send(msg: TargetMessage, text: str, mention: bool) -> None:
     if mention:
         await msg.reply(text)

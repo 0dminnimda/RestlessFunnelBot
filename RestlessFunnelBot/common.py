@@ -1,51 +1,10 @@
 import re
 from typing import Any, Dict, Optional, Tuple, Callable, Awaitable
 
+from .bot import Bot, bot
 from .database import DataBase, make_db
 from .mappers import map_model
-from .messenger import Messenger
 from .models import Chat, Message, Platform, User, model_attr, to_moscow_tz
-
-
-# COMMAND_PATTERN = r"(?:/(?P<command>\w+) )?\s*(?P<text>.+)"
-# COMMAND_PATTERN = r"(?:/(\w+)\s*)?(.+)"
-COMMAND_PATTERN = r"(?:/(\S+))? *(.*)"
-COMMAND_REGEXP = re.compile(COMMAND_PATTERN)
-
-
-CommandHandler = Callable[["Bot", str], Awaitable[None]]
-
-
-class Bot(Messenger):
-    db: DataBase
-    msg: Message
-
-    commands: Dict[str, CommandHandler] = {}
-
-    def command(self, *names: str) -> Callable[[CommandHandler], CommandHandler]:
-        def inner(f: CommandHandler) -> CommandHandler:
-            for name in names:
-                self.commands[name] = f
-            return f
-        return inner
-
-    async def reply(self, db: DataBase, in_msg: Any, msg: Message) -> None:
-        self.target_message = in_msg
-        self.db = db
-        self.msg = msg
-
-        match = COMMAND_REGEXP.match(msg.text)
-        if match is None:
-            return
-        command, text = match.groups()
-
-        func = self.commands.get(command)
-        if func is not None:
-            await func(self, text)
-
-
-bot = Bot()
-
 
 TIME_FORMAT = "%d %B %Y - %H:%M:%S (%Z)"
 
@@ -104,4 +63,4 @@ async def handle_message(
     async with make_db(platform) as db:
         msg = await make_message(db, in_msg, chat, author, is_private)
         if is_private:
-            await bot.reply(db, in_msg, msg)
+            await bot.handle_message(db, in_msg, msg)
