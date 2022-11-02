@@ -11,6 +11,7 @@ from . import secrets
 from .common import handle_message, make_message
 from .database import make_db
 from .mappers import model_mapper
+from .messenger import answer_function, reply_function
 from .models import VK as PLATFORM
 from .models import Chat, Message, User
 
@@ -44,6 +45,16 @@ def chat_to_model(chat: TargetChat) -> Dict[str, Any]:
         id=chat.peer.id,
         name=Chat.generate_name(title),
     )
+
+
+@reply_function(TargetMessage)
+async def reply_to(msg: TargetMessage, text: str) -> None:
+    await msg.reply(text)
+
+
+@answer_function(TargetMessage)
+async def answer_to(msg: TargetMessage, text: str) -> None:
+    await msg.answer(text)
 
 
 bot = Bot(token=secrets.VK_API_TOKEN)
