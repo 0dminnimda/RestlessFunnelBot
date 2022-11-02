@@ -34,7 +34,7 @@ def user_to_model(user: TargetUser) -> Dict[str, Any]:
 def chat_to_model(chat: TargetChat) -> Dict[str, Any]:
     return dict(
         id=chat.id,
-        name=Chat.generate_name(chat.title),
+        name=Chat.generate_name(chat.title or "RestlessFunnelBot"),
     )
 
 
