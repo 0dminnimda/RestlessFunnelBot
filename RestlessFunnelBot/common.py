@@ -1,6 +1,6 @@
 from typing import Any, Dict, Tuple
 
-from .bot import Bot, bot
+from .bot import Bot, bot, DEFAULT_COMMAND
 from .database import DataBase, make_db
 from .mappers import map_model
 from .models import Chat, Message, Platform, User, model_attr, to_moscow_tz
@@ -12,6 +12,11 @@ async def greet(bot: Bot, text: str) -> None:
         "Hi, I'm RestlessFunnelBot!\n"
         "I listen to others, and then I retell everything to you 🤗\n"
     )
+
+
+@bot.command(DEFAULT_COMMAND)
+async def default_response(bot: Bot, text: str) -> None:
+    await bot.send("Sorry, I don't understand you, can you repeat again, please?")
 
 
 TIME_FORMAT = "%d %B %Y - %H:%M:%S (%Z)"
