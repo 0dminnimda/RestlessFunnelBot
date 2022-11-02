@@ -5,6 +5,7 @@ from .bot import DEFAULT_COMMAND, Bot, bot
 from .database import DataBase, make_db
 from .mappers import map_model
 from .models import Chat, Message, Platform, User, model_attr, to_moscow_tz
+from .ttldict import TTLDict
 
 
 @bot.command("start", "help")
@@ -43,42 +44,20 @@ async def accessible_chats(bot: Bot, text: str) -> None:
     await bot.send("List of accessible chats\n" + "\n".join(names))
 
 
-auth_keys: Dict[int, str] = {}
-auth_key_info: Dict[str, Tuple[float, int]] = {}
-KEY_LIFE_TIME = 60
+AUTH_TTL = 60
+auth_ids: TTLDict[int, bool] = TTLDict(AUTH_TTL, 32)
+auth_keys: TTLDict[str, int] = TTLDict(AUTH_TTL, 32)
 
 
-def delete_outdated_auth_keys(max_number_of_elements: int = 256):
-    """
-    This function relies on the fact that dict is ordered.
-    More often calls -> faster execution time.
-    Complexity is ~O(n*sigmiod(x)) where n is number of keys
-    and x is how much time passed from the last update.
-    """
-
-    keys = set()
-
-    current_time = time()
-    for key, (timestamp, id) in auth_key_info.items():
-        if current_time - timestamp <= KEY_LIFE_TIME:
-            break
-
-        keys.add(key)
-        key_ = auth_keys.pop(id, None)
-        if key_ is not None:
-            keys.add(key_)
-
-        max_number_of_elements -= 1
-        if max_number_of_elements <= 0:
-            break
-
-    for key in keys:
-        auth_key_info.pop(key, None)
+def expire_auth():
+    for id in auth_keys.expire():
+        auth_ids.pop(id)
+    auth_ids.expire()
 
 
 def set_auth_key(id: int, key: str) -> str:
-    auth_keys[id] = key
-    auth_key_info[key] = (time(), id)
+    auth_ids[id] = True
+    auth_keys[key] = id
     return key
 
 
@@ -86,34 +65,32 @@ def set_auth_key(id: int, key: str) -> str:
 async def link(bot: Bot, text: str) -> None:
     text = text.strip(" ")
     user_id = cast(int, bot.msg.author.id)
-    delete_outdated_auth_keys()
 
     if text:
-        other_user_id = auth_key_info.get(text)
+        other_user_id = auth_keys.get(text)
         if other_user_id is None:
-            await bot.send("This secret code is invalid :(")
-            # await bot.send("No such secret code found :(")
+            await bot.send("This secret code is outdated or invalid :(")
+        elif other_user_id == user_id:
+            await bot.send("You can't link to the same account")
         else:
             await bot.send("Successfully linked!")
-            await bot.send(f"DEBUG: with {other_user_id[1]}")
-            auth_keys.pop(user_id, None)
-            auth_key_info.pop(text, None)
+            await bot.send(f"DEBUG: with {other_user_id}")
+            auth_ids.pop(other_user_id)
+            auth_keys.pop(text)
     else:
-        key = auth_keys.get(user_id)
-        if key is None:
+        if auth_ids.get(user_id):
+            await bot.send("You have already generated a secret code")
+        else:
             key = set_auth_key(user_id, f"ur-mom-{user_id}")
             await bot.send(
                 "With this command you link your account to another account\n"
                 "\n"
                 f"I created a temporary a secret code for you: {key}\n"
-                f"Hurry, it will last only for {KEY_LIFE_TIME} seconds\n"
+                f"Hurry, it will last only for {AUTH_TTL} seconds\n"
                 "\n"
                 "To use it log into another account and send this message:"
             )
-            await bot.send(f"`/link {key}`")
-        else:
-            await bot.send("You already have generated a secret code")
-            await bot.send(f"`/link {key}`")
+            await bot.send(f"/link {key}", raw=True)
 
 
 async def make_message(
@@ -138,7 +115,9 @@ async def make_message(
 async def handle_message(
     platform: Platform, in_msg: Any, chat: Any, author: Any, is_private: bool
 ) -> None:
+    expire_auth()
     async with make_db(platform) as db:
         msg = await make_message(db, in_msg, chat, author, is_private)
         if is_private:
             await bot.handle_message(db, in_msg, msg)
+    # print(auth_ids, auth_keys)
