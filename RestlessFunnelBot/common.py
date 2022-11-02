@@ -1,9 +1,23 @@
+from datetime import datetime, timedelta, timezone
 from typing import Any, Optional
 
 from .database import DataBase, make_db
 from .mappers import map_model
 from .messenger import answer_to, reply_to
 from .models import Chat, Message, Platform, User, model_attr
+
+
+TZ_UTC = timezone.utc
+TZ_MOSCOW = timezone(timedelta(hours=3))
+TIME_FORMAT = "%d %B %Y - %H:%M:%S (%Z)"
+
+
+def to_moscow_tz(dt: datetime) -> datetime:
+    return dt.replace(tzinfo=TZ_UTC).astimezone(TZ_MOSCOW)
+
+
+def from_moscow_tz(dt: datetime) -> datetime:
+    return dt.replace(tzinfo=TZ_MOSCOW).astimezone(TZ_UTC)
 
 
 async def all_messages(db: DataBase, user: User) -> str:
