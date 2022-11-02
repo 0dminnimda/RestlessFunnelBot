@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any, Dict, cast
 
 from vkbottle.bot import Bot
 from vkbottle.bot import Message as TargetMessage
@@ -71,8 +71,10 @@ async def on_ready() -> None:
 
 @bot.on.message()
 async def on_message(in_msg: TargetMessage) -> None:
-    (chat,) = (await bot.api.messages.get_conversations_by_id(in_msg.peer_id)).items
-    (author,) = await bot.api.users.get(in_msg.from_id)
+    peer_ids = cast(list, in_msg.peer_id)
+    (chat,) = (await bot.api.messages.get_conversations_by_id(peer_ids)).items
+    user_ids = cast(list, in_msg.from_id)
+    (author,) = await bot.api.users.get(user_ids)
 
     # also works: is_private = in_msg.peer_id == in_msg.from_id
     is_private = chat.peer.type == TargetChatType.USER
