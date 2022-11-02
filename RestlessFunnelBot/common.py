@@ -1,10 +1,18 @@
-import re
-from typing import Any, Dict, Optional, Tuple, Callable, Awaitable
+from typing import Any, Dict, Tuple
 
 from .bot import Bot, bot
 from .database import DataBase, make_db
 from .mappers import map_model
 from .models import Chat, Message, Platform, User, model_attr, to_moscow_tz
+
+
+@bot.command("start", "help")
+async def greet(bot: Bot, text: str) -> None:
+    await bot.send(
+        "Hi, I'm RestlessFunnelBot!\n"
+        "I listen to others, and then I retell everything to you 🤗\n"
+    )
+
 
 TIME_FORMAT = "%d %B %Y - %H:%M:%S (%Z)"
 
@@ -25,18 +33,10 @@ CHAT_SEP = "/"
 async def accessible_chats(bot: Bot, text: str) -> None:
     criteria = model_attr(Chat.id).in_(bot.msg.author.accessible_chats)
     chats = await bot.db.read_all(Chat, criteria)
-    names = [
-        f"{i+1} {chat.represent_name(CHAT_SEP)}" for i, chat in enumerate(chats)
-    ]
+    names = [f"{i+1} {chat.represent_name(CHAT_SEP)}" for i, chat in enumerate(chats)]
     await bot.send("List of accessible chats\n" + "\n".join(names))
 
 
-@bot.command("start", "help")
-async def greet(bot: Bot, text: str) -> None:
-    await bot.send(
-        "Hi, I'm RestlessFunnelBot!\n"
-        "I listen to others, and then I retell everything to you 🤗\n"
-    )
 
 
 async def make_message(
