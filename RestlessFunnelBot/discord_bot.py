@@ -13,7 +13,7 @@ from discord.utils import MISSING
 from . import secrets
 from .common import handle_message
 from .mappers import model_mapper
-from .messenger import answer_function, reply_function
+from .messenger import send_function
 from .models import DISCORD as PLATFORM
 from .models import Chat, Message, User
 
@@ -52,14 +52,12 @@ def private_chat_to_model(chat: TargetPrivateChat) -> Dict[str, Any]:
     )
 
 
-@reply_function(TargetMessage)
-async def reply_to(msg: TargetMessage, text: str) -> None:
-    await msg.channel.send(text, reference=msg)
-
-
-@answer_function(TargetMessage)
-async def answer_to(msg: TargetMessage, text: str) -> None:
-    await msg.channel.send(text)
+@send_function(TargetMessage)
+async def send(msg: TargetMessage, text: str, mention: bool) -> None:
+    if mention:
+        await msg.channel.send(text, reference=msg)
+    else:
+        await msg.channel.send(text)
 
 
 intents = discord.Intents.default()

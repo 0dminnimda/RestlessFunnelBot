@@ -10,7 +10,7 @@ from aiogram.types import User as TargetUser
 from . import secrets
 from .common import handle_message
 from .mappers import model_mapper
-from .messenger import answer_function, reply_function
+from .messenger import send_function
 from .models import TELEGRAM as PLATFORM
 from .models import Chat, Message, User, from_moscow_tz
 
@@ -38,14 +38,12 @@ def chat_to_model(chat: TargetChat) -> Dict[str, Any]:
     )
 
 
-@reply_function(TargetMessage)
-async def reply_to(msg: TargetMessage, text: str) -> None:
-    await msg.reply(text)
-
-
-@answer_function(TargetMessage)
-async def answer_to(msg: TargetMessage, text: str) -> None:
-    await msg.answer(text)
+@send_function(TargetMessage)
+async def send(msg: TargetMessage, text: str, mention: bool) -> None:
+    if mention:
+        await msg.reply(text)
+    else:
+        await msg.answer(text)
 
 
 logging.basicConfig(level=logging.INFO)
