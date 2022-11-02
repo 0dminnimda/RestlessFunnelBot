@@ -5,7 +5,7 @@ from .database import DataBase
 from .models import Message
 
 T = TypeVar("T", bound=Any)
-SendFunc = Callable[[T, str, bool], Awaitable[None]]
+SendFunc = Callable[[T, str, bool, bool], Awaitable[None]]
 MapToFunc = Dict[Type[T], SendFunc]
 
 CommandHandler = Callable[["Bot", str], Awaitable[None]]
@@ -36,9 +36,9 @@ class Bot:
 
         return inner
 
-    async def send(self, text: str, mention: bool = False) -> None:
+    async def send(self, text: str, mention: bool = False, raw: bool = False) -> None:
         msg = self.target_message
-        await self.send_functions[type(msg)](msg, text, mention)
+        await self.send_functions[type(msg)](msg, text, mention, raw)
 
     commands: CommandMap = {}
     default_handler: Optional[CommandHandler]

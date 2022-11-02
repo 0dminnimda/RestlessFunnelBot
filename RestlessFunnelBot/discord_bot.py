@@ -53,7 +53,13 @@ def private_chat_to_model(chat: TargetPrivateChat) -> Dict[str, Any]:
 
 
 @main_bot.send_function(TargetMessage)
-async def send(msg: TargetMessage, text: str, mention: bool) -> None:
+async def send(msg: TargetMessage, text: str, mention: bool, raw: bool) -> None:
+    if raw:
+        if "\n" in text:
+            text = f"```{text}```"
+        else:
+            text = f"`{text}`"
+
     if mention:
         await msg.channel.send(text, reference=msg)
     else:
