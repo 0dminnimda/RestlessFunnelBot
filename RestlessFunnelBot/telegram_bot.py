@@ -8,7 +8,7 @@ from aiogram.types import Message as TargetMessage
 from aiogram.types import User as TargetUser
 
 from . import secrets
-from .common import handle_message
+from .common import handle_message, from_moscow_tz
 from .mappers import model_mapper
 from .messenger import answer_function, reply_function
 from .models import TELEGRAM as PLATFORM
@@ -19,7 +19,7 @@ from .models import Chat, Message, User
 def message_to_model(msg: TargetMessage) -> Dict[str, Any]:
     return dict(
         text=msg.text,
-        timestamp=msg.date,
+        timestamp=from_moscow_tz(msg.date),
     )
 
 
