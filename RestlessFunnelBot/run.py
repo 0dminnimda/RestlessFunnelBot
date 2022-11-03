@@ -9,6 +9,16 @@ from RestlessFunnelBot import discord_bot, options, telegram_bot, vk_bot
 from RestlessFunnelBot.database import db_tables
 
 
+async def _close_all_aiohttp_clients():
+    import gc
+
+    import aiohttp
+
+    for obj in gc.get_objects():
+        if isinstance(obj, aiohttp.ClientSession):
+            await obj.close()
+
+
 async def run_all() -> None:
     try:
         async with db_tables():
@@ -19,11 +29,8 @@ async def run_all() -> None:
             )
     except (KeyboardInterrupt, asyncio.CancelledError):
         print("Exiting ...")
-    # finally:
-    #     loop = asyncio.get_event_loop()
-    #     tasks = asyncio.all_tasks()
-    #     loop.stop()
-    #     loop.close()
+    finally:
+        await _close_all_aiohttp_clients()
 
 
 def run_all_sync() -> None:
