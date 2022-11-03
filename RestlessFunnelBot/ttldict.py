@@ -70,19 +70,21 @@ class TTLDict(Dict[K, V]):
             value = cast(V, TTLValue(value, self._ttl))
         super().__setitem__(key, value)
 
-    # def __delitem__(self, key: TTLKey[K]) -> None:
+    # def __delitem__(self, key: K) -> None:
     #     # self.expire()
     #     super().__delitem__(key)
 
-    def __iter__(self) -> Iterator[K]:
-        for key, value in self.items():
-            yield key
+    # I don't need this right now
+    # def __iter__(self) -> Iterator[K]:
+    #     for key, value in self.items():
+    #         yield key
 
-    def items(self) -> Iterable[Tuple[K, V]]:  # type: ignore[override]
-        current_time = time()
-        for key, value in cast(Iterable[Tuple[K, _Val]], super().items()):
-            if current_time <= value.expires:
-                yield key, value.value
+    # I don't need this right now
+    # def items(self) -> Iterable[Tuple[K, V]]:  # type: ignore[override]
+    #     current_time = time()
+    #     for key, value in cast(Iterable[Tuple[K, _Val]], super().items()):
+    #         if current_time <= value.expires:
+    #             yield key, value.value
 
     def get(self, key: K, default: Optional[Union[V, T]] = None) -> Union[V, T]:
         value_ = super().get(key, default)  # type: ignore
