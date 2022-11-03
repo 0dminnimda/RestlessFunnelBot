@@ -47,7 +47,7 @@ dependencies = {file = "requirements/basic.txt"}
 
 [tool.setuptools.dynamic.optional-dependencies]
 # docs = {file = "requirements/docs.txt"}
-# test = {file = "requirements/test.txt"}
+test = {file = "requirements/test.txt"}
 speedups = {file = "requirements/speedups.txt"}
 
 # python -m mypy --config-file pyproject.toml
@@ -55,4 +55,4 @@ speedups = {file = "requirements/speedups.txt"}
 python_version = "3.7"
 ignore_missing_imports = true
 check_untyped_defs = true
-files = ["RestlessFunnelBot"]  # , "tests"]
+files = ["RestlessFunnelBot", "tests"]
