@@ -84,14 +84,14 @@ class TTLDict(Dict[K, V]):
             if current_time <= value.expires:
                 yield key, value.value
 
-    def get(self, key: K, default: Union[V, T] = None) -> Union[V, T]:
-        value_ = super().get(key, cast(V, default))
+    def get(self, key: K, default: Optional[Union[V, T]] = None) -> Union[V, T]:
+        value_ = super().get(key, default)  # type: ignore
         if value_ is default:
             return value_
         value = cast(_Val, value_)
         if time() <= value.expires:
             return value.value
-        super().pop(key)
+        super().__delitem__(key)
         return cast(Union[V, T], default)
 
     def pop(self, key: K, default: Union[V, T] = _DEFAULT) -> Union[V, T]:
