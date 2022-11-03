@@ -8,6 +8,7 @@ from aiogram.types import Message as TargetMessage
 from aiogram.types import User as TargetUser
 
 from . import secrets
+from .__metadata__ import BOT_NAME
 from .bot import bot as main_bot
 from .common import handle_message
 from .mappers import model_mapper
@@ -34,7 +35,7 @@ def user_to_model(user: TargetUser) -> Dict[str, Any]:
 def chat_to_model(chat: TargetChat) -> Dict[str, Any]:
     return dict(
         target_id=chat.id,
-        name=Chat.generate_name(chat.title or "RestlessFunnelBot"),
+        name=Chat.generate_name(chat.title or BOT_NAME),
     )
 
 
