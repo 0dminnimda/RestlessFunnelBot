@@ -66,10 +66,12 @@ async def on_message(in_msg: TargetMessage) -> None:
 
 
 async def run() -> None:
-    try:
-        await dp.start_polling()
-    finally:
-        await bot.close()
+    # try:
+    await dp.start_polling()
+    # finally:
+    #     await dp.wait_closed()
+    #     dp.stop_polling()
+    #     await bot.close()
 
 
 def run_sync() -> None:

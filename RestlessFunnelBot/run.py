@@ -10,12 +10,15 @@ from RestlessFunnelBot.database import db_tables
 
 
 async def run_all() -> None:
-    async with db_tables():
-        await asyncio.gather(
-            vk_bot.run(),
-            discord_bot.run(),
-            telegram_bot.run(),
-        )
+    try:
+        async with db_tables():
+            await asyncio.gather(
+                vk_bot.run(),
+                discord_bot.run(),
+                telegram_bot.run(),
+            )
+    except (KeyboardInterrupt, asyncio.CancelledError):
+        print("Exiting ...")
 
 
 def run_all_sync() -> None:
