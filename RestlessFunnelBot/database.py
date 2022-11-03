@@ -8,6 +8,7 @@ from sqlalchemy.sql import Select
 from sqlmodel import SQLModel, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
+from . import options
 from .models import Platform
 
 DATABASE_URL = f"sqlite+aiosqlite:///{Path(__file__).parent}/sqlite.db"
@@ -19,16 +20,15 @@ engine = create_async_engine(
 
 async def db_startup() -> None:
     async with engine.begin() as conn:
-        # if options.DEV_MODE:
-        #     await conn.run_sync(SQLModel.metadata.drop_all)
-        await conn.run_sync(SQLModel.metadata.drop_all)
+        if options.DEV_MODE:
+            await conn.run_sync(SQLModel.metadata.drop_all)
         await conn.run_sync(SQLModel.metadata.create_all)
 
 
 async def db_shutdown() -> None:
-    # if options.DEV_MODE:
-    #     async with engine.begin() as conn:
-    #         await conn.run_sync(SQLModel.metadata.drop_all)
+    if options.DEV_MODE:
+        async with engine.begin() as conn:
+            await conn.run_sync(SQLModel.metadata.drop_all)
 
     await engine.dispose()
 
