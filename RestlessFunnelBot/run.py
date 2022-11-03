@@ -36,6 +36,7 @@ run = run_all_sync
 if __name__ in ("__mp_main__", "__main__"):
     # if this file is launched directly, this is a sign that it is a dev
     options.DEV_MODE = True
+    print("Running is DEV MODE")
 
 if __name__ == "__main__":
     run()
