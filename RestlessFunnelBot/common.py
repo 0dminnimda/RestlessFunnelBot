@@ -1,6 +1,7 @@
 from time import time
-from typing import Any, Dict, Optional, Tuple, cast, Set, List
+from typing import Any, Dict, List, Optional, Set, Tuple, cast
 
+from .__metadata__ import BOT_NAME
 from .bot import DEFAULT_COMMAND, Bot, bot
 from .database import DataBase, make_db
 from .mappers import map_model
@@ -11,7 +12,7 @@ from .ttldict import TTLDict
 @bot.command("start", "help")
 async def greet(bot: Bot, text: str) -> None:
     await bot.send(
-        "Hi, I'm RestlessFunnelBot!\n"
+        f"Hi, I'm {BOT_NAME}!\n"
         "I listen to others, and then I retell everything to you 🤗\n"
     )
 
