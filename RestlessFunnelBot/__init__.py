@@ -1,2 +1,1 @@
-__version__ = "0.0.1"
-__name__ = "RestlessFunnelBot"
+from .__metadata__ import __name__, __version__
