@@ -19,6 +19,11 @@ async def run_all() -> None:
             )
     except (KeyboardInterrupt, asyncio.CancelledError):
         print("Exiting ...")
+    # finally:
+    #     loop = asyncio.get_event_loop()
+    #     tasks = asyncio.all_tasks()
+    #     loop.stop()
+    #     loop.close()
 
 
 def run_all_sync() -> None:
