@@ -39,6 +39,9 @@ class TTLValue(Generic[V]):
 _Val = TTLValue[V]
 
 
+_DEFAULT: Any = object()
+
+
 class TTLDict(Dict[K, V]):
     __slots__ = "_ttl", "expire_count"
 
@@ -91,6 +94,15 @@ class TTLDict(Dict[K, V]):
         super().pop(key)
         return cast(Union[V, T], default)
 
+    def pop(self, key: K, default: Union[V, T] = _DEFAULT) -> Union[V, T]:
+        if default is _DEFAULT:
+            result = super().pop(key)
+        else:
+            result = super().pop(key, default)
+            if result is default:
+                return default
+        return cast(_Val, result).value
+
     def expire(self) -> List[V]:
         """
         Removes and returns expired items from the dict.
@@ -114,4 +126,4 @@ class TTLDict(Dict[K, V]):
             if count == 0:
                 break
 
-        return [cast(_Val, self.pop(key)).value for key in keys]
+        return [self.pop(key) for key in keys]
