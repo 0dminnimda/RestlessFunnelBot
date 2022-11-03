@@ -45,8 +45,9 @@ async def accessible_chats(bot: Bot, text: str) -> None:
 
 
 AUTH_TTL = 60
-auth_ids: TTLDict[int, bool] = TTLDict(AUTH_TTL, 32)
-auth_keys: TTLDict[str, int] = TTLDict(AUTH_TTL, 32)
+EXPIRE_COUNT = 128
+auth_ids: TTLDict[int, bool] = TTLDict(AUTH_TTL, EXPIRE_COUNT)
+auth_keys: TTLDict[str, int] = TTLDict(AUTH_TTL, EXPIRE_COUNT)
 
 
 def expire_auth():
