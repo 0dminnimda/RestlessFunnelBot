@@ -49,6 +49,7 @@ class TTLDict(Dict[K, V]):
     expire_count: int
 
     def __init__(self, ttl: float, expire_count: int = -1) -> None:
+        super().__init__()
         self._ttl = ttl
         self.expire_count = expire_count
 
