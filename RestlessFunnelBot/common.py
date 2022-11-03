@@ -73,10 +73,10 @@ async def link(bot: Bot, text: str) -> None:
         elif other_user_id == user_id:
             await bot.send("You can't link to the same account")
         else:
+            del auth_ids[other_user_id]
+            del auth_keys[text]
             await bot.send("Successfully linked!")
             await bot.send(f"DEBUG: with {other_user_id}")
-            auth_ids.pop(other_user_id)
-            auth_keys.pop(text)
     else:
         if auth_ids.get(user_id):
             await bot.send("You have already generated a secret code")
