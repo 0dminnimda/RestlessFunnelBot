@@ -42,7 +42,7 @@ dynamic = ["version", "dependencies", "optional-dependencies"]
 RestlessFunnelBot = ["py.typed"]
 
 [tool.setuptools.dynamic]
-version = {attr = "RestlessFunnelBot.__version__"}
+version = {attr = "RestlessFunnelBot.__metadata__.__version__"}
 dependencies = {file = "requirements/basic.txt"}
 
 [tool.setuptools.dynamic.optional-dependencies]
