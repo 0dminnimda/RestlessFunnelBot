@@ -105,7 +105,7 @@ async def make_message(
     await db.flush()
 
     fields["chat_id"] = chat.id
-    fields["author_id"] = author.id
+    author.access_id = fields["author_id"] = author.id
 
     msg = db.create_no_add(Message, **fields)
     if not is_private:
