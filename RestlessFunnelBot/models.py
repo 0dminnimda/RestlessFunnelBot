@@ -68,6 +68,7 @@ class Chat(BaseModel, table=True):
 
 class User(BaseModel, table=True):
     target_id: int
+    access_id: Optional[int]
     accessible_chats: List[int] = Field(default_factory=list, sa_column=Column(JSON))
 
     def add_chat(self, chat: Chat) -> None:
