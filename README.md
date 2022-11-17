@@ -1,8 +1,9 @@
-<h1 hidden align="center">RestlessFunnelBot</h1>
+<h1 align="center">
+    <img alt="RestlessFunnelBot Logo" width="800vw" src="https://raw.githubusercontent.com/0dminnimda/RestlessFunnelBot/main/docs/_static/logo.svg">
+    <br>Message Aggregator<br>For Social Networks
+</h1>
 
-<p align="center"><img alt="RestlessFunnelBot Logo" width="800vw" src="https://raw.githubusercontent.com/0dminnimda/RestlessFunnelBot/main/docs/_static/logo.svg"></p>
-<p align="center"><font size="+3"><b>Message Aggregator<br>For Social Networks</b></font></p>
-
+<br>
 
 ## ✔ Install
 
