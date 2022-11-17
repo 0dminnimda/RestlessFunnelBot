@@ -1,5 +1,5 @@
 <p align="center">
-    <img alt="RestlessFunnelBot" width="650vw" src="https://raw.githubusercontent.com/0dminnimda/RestlessFunnelBot/main/docs/_static/logo_fancy_cooked.svg">
+    <img alt="RestlessFunnelBot" width="700vw" src="https://raw.githubusercontent.com/0dminnimda/RestlessFunnelBot/main/docs/_static/logo_fancy_cooked.svg">
 </p>
 
 ## ✔ Install
