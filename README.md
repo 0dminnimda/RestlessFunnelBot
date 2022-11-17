@@ -1,8 +1,10 @@
-# RestlessFunnelBot
+<h1 hidden align="center">RestlessFunnelBot</h1>
 
-Message aggregator for social networks
+<p align="center"><img alt="RestlessFunnelBot Logo" width="800vw" src="https://raw.githubusercontent.com/0dminnimda/RestlessFunnelBot/main/docs/_static/logo.svg"></p>
+<p align="center"><font size="+3"><b>Message Aggregator<br>For Social Networks</b></font></p>
 
-## Install
+
+## ✔ Install
 
 Clone the repo, cd into the directory and run
 
@@ -16,7 +18,7 @@ If you want to install optional dependencies for speedups run this instead
 python -m pip install .[speedups]
 ```
 
-## Setup
+## ⚙ Setup
 
 To be able to run the bot you need to have api bot tokens
 
@@ -30,7 +32,7 @@ Copy the contents from `secrets.py-template` and replace `...` with your tokens
 
 > ⚠️ **Don't push tokens into public repositories**
 
-## Run
+## 🏃‍♂️ Run
 
 It's just as easy as running a command :0
 
