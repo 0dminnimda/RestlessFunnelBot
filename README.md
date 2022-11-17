@@ -33,7 +33,7 @@ Copy the contents from `secrets.py-template` and replace `...` with your tokens
 
 > ⚠️ **Don't push tokens into public repositories**
 
-## 🏃‍♂️ Run
+## 🚀 Run
 
 It's just as easy as running a command :0
 
