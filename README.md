@@ -37,3 +37,11 @@ It's just as easy as running a command :0
 ```console
 python -m RestlessFunnelBot
 ```
+
+## 👔 Official bots
+
+> ⚠️ **Those may work right now ... or may not ... or may stop working forever**
+
+- VK: [restlessfunnelbot](https://vk.com/restlessfunnelbot)
+- Discord: [invitation link](https://discord.com/api/oauth2/authorize?client_id=1033399831084937327&permissions=84992&scope=bot)
+- Telegram: `@RestlessFunnelBot`
