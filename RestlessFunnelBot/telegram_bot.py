@@ -76,3 +76,5 @@ async def run() -> None:
 
 def run_sync() -> None:
     executor.start_polling(dp, skip_updates=False)
+
+# XXX: try telethon or pyrogram for MTP
