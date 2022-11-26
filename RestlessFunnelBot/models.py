@@ -41,10 +41,13 @@ VK = Platform.VK
 
 class BaseModel(SQLModel):
     id: Optional[int] = Field(default=None, primary_key=True)
+
+
+class PlatformModel(BaseModel):
     platform: Platform
 
 
-class Message(BaseModel, table=True):
+class Message(PlatformModel, table=True):
     text: str
     timestamp: datetime
     author_id: int = Field(foreign_key="user.id")
@@ -56,7 +59,7 @@ class Message(BaseModel, table=True):
 NAME_SEPARATOR = chr(1)
 
 
-class Chat(BaseModel, table=True):
+class Chat(PlatformModel, table=True):
     target_id: int
     name: str
 
@@ -68,7 +71,7 @@ class Chat(BaseModel, table=True):
         return self.name.replace(NAME_SEPARATOR, sep)
 
 
-class User(BaseModel, table=True):
+class User(PlatformModel, table=True):
     target_id: int
     access_id: Optional[int]
     accessible_chats: List[int] = Field(default_factory=list, sa_column=Column(JSON))
