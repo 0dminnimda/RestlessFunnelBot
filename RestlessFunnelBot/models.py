@@ -44,6 +44,7 @@ class BaseModel(SQLModel):
 
 
 class PlatformModel(BaseModel):
+    target_id: int
     platform: Platform
 
 
@@ -60,7 +61,6 @@ NAME_SEPARATOR = chr(1)
 
 
 class Chat(PlatformModel, table=True):
-    target_id: int
     name: str
 
     @staticmethod
@@ -72,12 +72,12 @@ class Chat(PlatformModel, table=True):
 
 
 class User(PlatformModel, table=True):
-    target_id: int
     connection_id: int = Field(foreign_key="connecteduser.id")
     connection: ConnectedUser = Relationship()
 
 
 class ConnectedUser(BaseModel, table=True):
+    # TODO: rename
     accessible_chats: List[int] = Field(default_factory=list, sa_column=Column(JSON))
 
     def add_chat(self, chat: Chat) -> None:

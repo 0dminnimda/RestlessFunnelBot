@@ -21,6 +21,7 @@ from .models import Chat, Message, User
 @model_mapper(TargetMessage, Message)
 def message_to_model(msg: TargetMessage) -> Dict[str, Any]:
     return dict(
+        target_id=msg.id,
         text=msg.content,
         timestamp=msg.created_at,
     )

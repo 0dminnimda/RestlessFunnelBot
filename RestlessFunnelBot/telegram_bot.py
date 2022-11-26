@@ -19,6 +19,7 @@ from .models import Chat, Message, User, from_moscow_tz
 @model_mapper(TargetMessage, Message)
 def message_to_model(msg: TargetMessage) -> Dict[str, Any]:
     return dict(
+        target_id=msg.message_id,
         text=msg.text,
         timestamp=from_moscow_tz(msg.date),
     )
