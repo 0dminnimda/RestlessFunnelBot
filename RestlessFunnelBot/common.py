@@ -63,7 +63,7 @@ def set_auth_key(id: int, key: str) -> str:
     return key
 
 
-async def actualy_link(bot: Bot, other_user_id: int) -> None:
+async def actually_link(bot: Bot, other_user_id: int) -> None:
     other = await bot.db.read_one(User, id=other_user_id)
     other_connection = await bot.db.read_one(ConnectedUser, id=other.connection_id)
 
@@ -90,7 +90,7 @@ async def link(bot: Bot, text: str) -> None:
         else:
             del auth_ids[other_user_id]
             del auth_keys[text]
-            await actualy_link(bot, other_user_id)
+            await actually_link(bot, other_user_id)
             await bot.send("Successfully linked!")
             await bot.send(f"DEBUG: with {other_user_id}")
     else:
