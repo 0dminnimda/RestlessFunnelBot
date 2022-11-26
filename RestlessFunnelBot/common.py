@@ -5,7 +5,7 @@ from .__metadata__ import BOT_NAME
 from .bot import DEFAULT_COMMAND, Bot, bot
 from .database import DataBase, make_db
 from .mappers import map_model
-from .models import Chat, Message, Platform, User, col, to_moscow_tz
+from .models import Chat, ConnectedUser, Message, Platform, User, col, to_moscow_tz
 from .ttldict import TTLDict
 
 
@@ -95,21 +95,34 @@ async def link(bot: Bot, text: str) -> None:
             await bot.send(f"/link {key}", raw=True)
 
 
+async def read_or_create_user(db: DataBase, **fields: Any) -> User:
+    user = await db.read_one_or_none(User, **fields)
+    if user is not None:
+        user.connection = await db.read_one(ConnectedUser, id=user.connection_id)
+        return user
+
+    fields["connection"] = connection = db.create(ConnectedUser)
+    await db.flush()
+
+    fields["connection_id"] = connection.id
+    return db.create(User, **fields)
+
+
 async def make_message(
     db: DataBase, in_msg: Any, chat: Any, author: Any, is_private: bool
 ) -> Message:
     fields = map_model(in_msg)
 
     chat = fields["chat"] = await db.read_or_create(Chat, **map_model(chat))
-    author = fields["author"] = await db.read_or_create(User, **map_model(author))
+    author = fields["author"] = await read_or_create_user(db, **map_model(author))
     await db.flush()
 
     fields["chat_id"] = chat.id
-    author.access_id = fields["author_id"] = author.id
+    fields["author_id"] = author.id
 
     msg = db.create_no_add(Message, **fields)
     if not is_private:
-        author.add_chat(chat)
+        author.connection.add_chat(chat)
         db.add(msg)
     return msg
 

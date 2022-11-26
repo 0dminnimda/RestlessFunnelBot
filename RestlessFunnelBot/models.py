@@ -73,7 +73,11 @@ class Chat(PlatformModel, table=True):
 
 class User(PlatformModel, table=True):
     target_id: int
-    access_id: Optional[int]
+    connection_id: int = Field(foreign_key="connecteduser.id")
+    connection: ConnectedUser = Relationship()
+
+
+class ConnectedUser(BaseModel, table=True):
     accessible_chats: List[int] = Field(default_factory=list, sa_column=Column(JSON))
 
     def add_chat(self, chat: Chat) -> None:
@@ -88,3 +92,4 @@ class User(PlatformModel, table=True):
 Message.update_forward_refs()
 Chat.update_forward_refs()
 User.update_forward_refs()
+ConnectedUser.update_forward_refs()
