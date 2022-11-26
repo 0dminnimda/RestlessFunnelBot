@@ -88,6 +88,11 @@ class ConnectedUser(BaseModel, table=True):
             self.accessible_chats = list(self.accessible_chats)
             self.accessible_chats.insert(ind, chat.id)
 
+    def add_chats_from(self, other: ConnectedUser) -> None:
+        self.accessible_chats = list(
+            set(self.accessible_chats + other.accessible_chats)
+        )
+
 
 Message.update_forward_refs()
 Chat.update_forward_refs()
