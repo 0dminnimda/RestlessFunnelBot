@@ -5,13 +5,15 @@ from datetime import datetime, timedelta, timezone
 from enum import Enum
 from typing import Any, List, Optional, cast
 
-from sqlalchemy.orm.attributes import InstrumentedAttribute
+from sqlalchemy.sql.elements import ColumnClause
 from sqlalchemy.sql.schema import Column
 from sqlmodel import JSON, Field, Relationship, SQLModel
 
 
-def model_attr(attr: Any) -> InstrumentedAttribute:
-    return cast(InstrumentedAttribute, attr)
+# instead of sqlmodel.col()
+def col(attr: Any) -> ColumnClause:
+    # ColumnClause, Column, InstrumentedAttribute
+    return cast(ColumnClause, attr)
 
 
 TZ_UTC = timezone.utc
