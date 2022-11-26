@@ -77,21 +77,18 @@ class User(PlatformModel, table=True):
 
 
 class ConnectedUser(BaseModel, table=True):
-    # TODO: rename
-    accessible_chats: List[int] = Field(default_factory=list, sa_column=Column(JSON))
+    chats: List[int] = Field(default_factory=list, sa_column=Column(JSON))
 
     def add_chat(self, chat: Chat) -> None:
         assert chat.id is not None
-        ind = bisect(self.accessible_chats, chat.id)
-        if not (ind > 0 and self.accessible_chats[ind - 1] == chat.id):
+        ind = bisect(self.chats, chat.id)
+        if not (ind > 0 and self.chats[ind - 1] == chat.id):
             # otherwise list is not updated in the db
-            self.accessible_chats = list(self.accessible_chats)
-            self.accessible_chats.insert(ind, chat.id)
+            self.chats = list(self.chats)
+            self.chats.insert(ind, chat.id)
 
     def add_chats_from(self, other: ConnectedUser) -> None:
-        self.accessible_chats = list(
-            set(self.accessible_chats + other.accessible_chats)
-        )
+        self.chats = list(set(self.chats + other.chats))
 
 
 Message.update_forward_refs()

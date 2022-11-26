@@ -27,7 +27,7 @@ TIME_FORMAT = "%d %B %Y - %H:%M:%S (%Z)"
 @bot.command("list")
 async def all_messages(bot: Bot, text: str) -> None:
     messages = []
-    criteria = col(Message.chat_id).in_(bot.msg.author.connection.accessible_chats)
+    criteria = col(Message.chat_id).in_(bot.msg.author.connection.chats)
     for msg in await bot.db.read_all(Message, criteria):
         date = to_moscow_tz(msg.timestamp).strftime(TIME_FORMAT)
         messages.append(f"{msg.id}) {date}:\n{msg.text}\n")
@@ -39,7 +39,7 @@ CHAT_SEP = "/"
 
 @bot.command("chats")
 async def accessible_chats(bot: Bot, text: str) -> None:
-    criteria = col(Chat.id).in_(bot.msg.author.connection.accessible_chats)
+    criteria = col(Chat.id).in_(bot.msg.author.connection.chats)
     chats = await bot.db.read_all(Chat, criteria)
     names = [f"{i+1} {chat.represent_name(CHAT_SEP)}" for i, chat in enumerate(chats)]
     await bot.send("List of accessible chats\n" + "\n".join(names))
