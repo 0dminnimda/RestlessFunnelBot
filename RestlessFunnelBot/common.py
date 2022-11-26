@@ -1,5 +1,4 @@
-from time import time
-from typing import Any, Dict, List, Optional, Set, Tuple, cast
+from typing import Any, List, cast
 
 from .__metadata__ import BOT_NAME
 from .bot import DEFAULT_COMMAND, Bot, bot
@@ -28,7 +27,8 @@ TIME_FORMAT = "%d %B %Y - %H:%M:%S (%Z)"
 @bot.command("list")
 async def all_messages(bot: Bot, text: str) -> None:
     messages = []
-    for msg in await bot.db.read_all(Message):
+    criteria = col(Message.chat_id).in_(bot.msg.author.connection.accessible_chats)
+    for msg in await bot.db.read_all(Message, criteria):
         date = to_moscow_tz(msg.timestamp).strftime(TIME_FORMAT)
         messages.append(f"{msg.id}) {date}:\n{msg.text}\n")
     await bot.send("List of all messages\n" + "\n".join(messages))
