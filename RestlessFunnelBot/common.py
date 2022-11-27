@@ -75,7 +75,6 @@ async def actually_link(bot: Bot, other_user_id: int) -> None:
         user.connection = bot.msg.author.connection
 
     bot.msg.author.connection.add_chats_from(other_connection)
-    assert bot.msg.author.connection is not other_connection
     await bot.db.delete(other_connection)
 
 
@@ -95,7 +94,6 @@ async def link(bot: Bot, text: str) -> None:
             del auth_keys[text]
             await actually_link(bot, other_user_id)
             await bot.send("Successfully linked!")
-            await bot.send(f"DEBUG: with {other_user_id}")
     else:
         if auth_ids.get(user_id):
             await bot.send("You have already generated a secret code")
