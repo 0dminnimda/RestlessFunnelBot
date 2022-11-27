@@ -28,9 +28,9 @@ TIME_FORMAT = "%d %B %Y - %H:%M:%S (%Z)"
 async def all_messages(bot: Bot, text: str) -> None:
     messages = []
     criteria = col(Message.chat_id).in_(bot.msg.author.connection.chats)
-    for msg in await bot.db.read_all(Message, criteria):
+    for i, msg in enumerate(await bot.db.read_all(Message, criteria)):
         date = to_moscow_tz(msg.timestamp).strftime(TIME_FORMAT)
-        messages.append(f"{msg.id}) {date}:\n{msg.text}\n")
+        messages.append(f"{i+1}) {date}:\n{msg.text}\n")
     await bot.send("List of all messages\n" + "\n".join(messages))
 
 
