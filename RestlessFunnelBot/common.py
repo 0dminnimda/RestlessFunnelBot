@@ -17,9 +17,11 @@ async def greet(bot: Bot, text: str) -> None:
         "I listen to others, and then I retell everything to you 🤗\n"
     )
     await commands(bot, text)
-    await bot.send("If you want me to listen to some chat, "
-                   "add me there, give me required permissions "
-                   "and send one message there")
+    await bot.send(
+        "If you want me to listen to some chat, "
+        "add me there, give me required permissions "
+        "and send one message there"
+    )
 
 
 @bot.command("commands")
@@ -97,7 +99,7 @@ async def actually_link(bot: Bot, other_user_id: int) -> None:
     await bot.db.delete(other_connection)
 
 
-KEY_ALPHABET = string.digits*10 + string.ascii_letters*7 + "!?$%^&.,_~@:;/\\="*4
+KEY_ALPHABET = string.digits * 10 + string.ascii_letters * 7 + "!?$%^&.,_~@:;/\\=" * 4
 
 
 def generate_auth_key(length: int = 42) -> str:
@@ -184,9 +186,7 @@ async def unlink(bot: Bot, text: str) -> None:
         else:
             await bot.send(f"I could not find unlink option '{text}'")
     else:
-        await bot.send(
-            "You need to specify which accounts are going to be unlinked"
-        )
+        await bot.send("You need to specify which accounts are going to be unlinked")
         await bot.send("/unlink options", raw=True)
         await bot.send("Current options are:\n" "- all")
 
