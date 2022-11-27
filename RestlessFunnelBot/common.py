@@ -1,4 +1,4 @@
-from typing import Any, List, cast
+from typing import Any, Set, cast
 
 from .__metadata__ import BOT_NAME
 from .bot import DEFAULT_COMMAND, Bot, bot
@@ -108,6 +108,60 @@ async def link(bot: Bot, text: str) -> None:
                 "To use it log into another account and send this message:"
             )
             await bot.send(f"/link {key}", raw=True)
+
+
+async def actually_unlink(bot: Bot, unlink_ids: Set[int]) -> None:
+    all_linked = await bot.db.read_all(User, connection_id=bot.msg.author.connection_id)
+
+    to_unlink = []
+    left_linked = []
+    for user in all_linked:
+        if user.id in unlink_ids:
+            to_unlink.append(user)
+        else:
+            left_linked.append(user)
+
+    unlink_connection = bot.msg.author.connection
+    left_connection = bot.db.create(ConnectedUser)
+    await bot.db.flush()
+
+    unlink_connection.chats = sorted(set().union(*(user.chats for user in to_unlink)))
+    left_connection.chats = sorted(set().union(*(user.chats for user in left_linked)))
+
+    assert left_connection.id is not None
+    for user in left_linked:
+        user.connection_id = left_connection.id
+        user.connection = left_connection
+
+    if len(to_unlink) == 0:
+        await bot.db.delete(unlink_connection)
+    if len(left_linked) == 0:
+        await bot.db.delete(left_connection)
+
+
+@bot.command("unlink")
+async def unlink(bot: Bot, text: str) -> None:
+    text = text.strip(" ")
+
+    if text:
+        if text == "all":
+            linked = await bot.db.read_all(
+                User, connection_id=bot.msg.author.connection_id
+            )
+            await actually_unlink(
+                bot,
+                {cast(int, user.id) for user in linked}
+                - {cast(int, bot.msg.author.id)},
+            )
+            await bot.send(f"Successfully unlinked all")
+        else:
+            await bot.send(f"I could not find unlink option '{text}'")
+    else:
+        await bot.send(
+            "You need to specify which accounts are going to be unlinked"
+        )
+        await bot.send("/unlink options", raw=True)
+        await bot.send("Current options are:\n" "- all")
 
 
 async def read_or_create_user(db: DataBase, **fields: Any) -> User:
