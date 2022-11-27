@@ -130,3 +130,6 @@ class TTLDict(Dict[K, V]):
                 break
 
         return [self.pop(key) for key in keys]
+
+    def key_expires_at(self, key: K) -> float:
+        return cast(_Val, super().__getitem__(key)).expires
