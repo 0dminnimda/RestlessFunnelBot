@@ -151,11 +151,10 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-
 # Visual Studio Code
 .vscode/
 
 # Project ignores
-RestlessFunnelBot/secrets.py
+RestlessFunnelBot/bot_secrets.py
 
 RestlessFunnelBot/sqlite.db

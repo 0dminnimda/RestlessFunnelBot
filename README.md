@@ -25,8 +25,8 @@ Here are the instructions how to get them:
 - [Discord](https://www.writebots.com/discord-bot-token/)  <!-- https://discordpy.readthedocs.io/en/stable/discord.html -->
 - [Telegram](https://www.siteguarding.com/en/how-to-get-telegram-bot-api-token)
 
-When you gathered all of the tokens go to `RestlessFunnelBot` directory and create `secrets.py`  
-Copy the contents from `secrets.py-template` and replace `...` with your tokens
+When you gathered all of the tokens go to `RestlessFunnelBot` directory and create `bot_secrets.py`  
+Copy the contents from `bot_secrets.py-template` and replace `...` with your tokens
 
 > ⚠️ **Don't push tokens into public repositories**
 

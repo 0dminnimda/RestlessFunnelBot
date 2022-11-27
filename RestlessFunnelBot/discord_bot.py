@@ -10,7 +10,7 @@ from discord.user import BaseUser as TargetUser
 from discord.user import _UserTag as TargetUserTag
 from discord.utils import MISSING
 
-from . import secrets
+from . import bot_secrets
 from .bot import bot as main_bot
 from .common import handle_message
 from .mappers import model_mapper
@@ -105,8 +105,8 @@ async def run(reconnect: bool = True) -> None:
         )
 
     async with client:
-        await client.start(secrets.DISCORD_API_TOKEN, reconnect=reconnect)
+        await client.start(bot_secrets.DISCORD_API_TOKEN, reconnect=reconnect)
 
 
 def run_sync() -> None:
-    client.run(secrets.DISCORD_API_TOKEN)
+    client.run(bot_secrets.DISCORD_API_TOKEN)

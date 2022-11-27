@@ -8,7 +8,7 @@ from aiogram.types import Message as TargetMessage
 from aiogram.types import ParseMode
 from aiogram.types import User as TargetUser
 
-from . import secrets
+from . import bot_secrets
 from .__metadata__ import BOT_NAME
 from .bot import bot as main_bot
 from .common import handle_message
@@ -60,7 +60,7 @@ async def send(msg: TargetMessage, text: str, mention: bool, raw: bool) -> None:
 
 logging.basicConfig(level=logging.INFO)
 
-bot = Bot(token=secrets.TELEGRAM_API_TOKEN)
+bot = Bot(token=bot_secrets.TELEGRAM_API_TOKEN)
 dp = Dispatcher(bot=bot)
 
 

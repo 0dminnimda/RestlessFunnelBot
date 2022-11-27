@@ -7,7 +7,7 @@ from vkbottle_types.objects import MessagesConversation as TargetChat
 from vkbottle_types.objects import MessagesConversationPeerType as TargetChatType
 from vkbottle_types.objects import UsersUserFull as TargetUser
 
-from . import secrets
+from . import bot_secrets
 from .bot import bot as main_bot
 from .common import handle_message
 from .mappers import model_mapper
@@ -54,7 +54,7 @@ async def send(msg: TargetMessage, text: str, mention: bool, raw: bool) -> None:
         await msg.answer(text)
 
 
-bot = Bot(token=secrets.VK_API_TOKEN)
+bot = Bot(token=bot_secrets.VK_API_TOKEN)
 GROUP_ID: int = -1
 GROUP_NAME: str = "<unknown>"
 
