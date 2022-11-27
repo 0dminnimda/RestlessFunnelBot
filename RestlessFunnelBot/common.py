@@ -16,6 +16,10 @@ async def greet(bot: Bot, text: str) -> None:
         f"Hi, I'm {BOT_NAME}!\n"
         "I listen to others, and then I retell everything to you 🤗\n"
     )
+    await commands(bot, text)
+    await bot.send("If you want me to listen to some chat, "
+                   "add me there, give me required permissions "
+                   "and send one message there")
 
 
 @bot.command("commands")
