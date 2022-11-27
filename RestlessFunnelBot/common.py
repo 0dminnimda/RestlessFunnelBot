@@ -1,4 +1,6 @@
 from typing import Any, Set, cast
+import secrets
+import string
 
 from .__metadata__ import BOT_NAME
 from .bot import DEFAULT_COMMAND, Bot, bot
@@ -78,6 +80,14 @@ async def actually_link(bot: Bot, other_user_id: int) -> None:
     await bot.db.delete(other_connection)
 
 
+KEY_ALPHABET = string.digits*10 + string.ascii_letters*7 + "!?$%^&.,_~@:;/\\="*4
+
+
+def generate_auth_key(length: int = 42) -> str:
+    # secrets.token_urlsafe()
+    return "".join(secrets.choice(KEY_ALPHABET) for _ in range(length))
+
+
 @bot.command("link")
 async def link(bot: Bot, text: str) -> None:
     text = text.strip(" ")
@@ -98,7 +108,7 @@ async def link(bot: Bot, text: str) -> None:
         if auth_ids.get(user_id):
             await bot.send("You have already generated a secret code")
         else:
-            key = set_auth_key(user_id, f"ur-mom-{user_id}")
+            key = set_auth_key(user_id, generate_auth_key())
             await bot.send(
                 "With this command you link your account to another account\n"
                 "\n"
