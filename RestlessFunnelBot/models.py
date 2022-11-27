@@ -88,7 +88,7 @@ class ConnectedUser(BaseModel, table=True):
             self.chats.insert(ind, chat.id)
 
     def add_chats_from(self, other: ConnectedUser) -> None:
-        self.chats = list(set(self.chats + other.chats))
+        self.chats = sorted(set(self.chats).union(other.chats))
 
 
 Message.update_forward_refs()
