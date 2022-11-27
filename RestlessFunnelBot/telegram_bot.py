@@ -1,10 +1,11 @@
 import logging
 from typing import Any, Dict
 
-from aiogram import Bot, Dispatcher, executor
+from aiogram import Bot, Dispatcher, executor, utils
 from aiogram.types import Chat as TargetChat
 from aiogram.types import ChatType as TargetChatType
 from aiogram.types import Message as TargetMessage
+from aiogram.types import ParseMode
 from aiogram.types import User as TargetUser
 
 from . import secrets
@@ -42,16 +43,19 @@ def chat_to_model(chat: TargetChat) -> Dict[str, Any]:
 
 @main_bot.send_function(TargetMessage)
 async def send(msg: TargetMessage, text: str, mention: bool, raw: bool) -> None:
+    parse_mode = None
     if raw:
+        parse_mode = ParseMode.MARKDOWN_V2
+        text = utils.markdown.escape_md(text)
         if "\n" in text:
             text = f"```{text}```"
         else:
             text = f"`{text}`"
 
     if mention:
-        await msg.reply(text)
+        await msg.reply(text, parse_mode=parse_mode)
     else:
-        await msg.answer(text)
+        await msg.answer(text, parse_mode=parse_mode)
 
 
 logging.basicConfig(level=logging.INFO)
