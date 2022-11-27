@@ -18,6 +18,16 @@ async def greet(bot: Bot, text: str) -> None:
     )
 
 
+@bot.command("commands")
+async def commands(bot: Bot, text: str) -> None:
+    await bot.send(
+        "Here are my commands:\n"
+        + "\n".join(
+            "- /" + com for com in bot.commands.keys() if com != DEFAULT_COMMAND
+        )
+    )
+
+
 @bot.command(DEFAULT_COMMAND)
 async def default_response(bot: Bot, text: str) -> None:
     await bot.send("Sorry, I don't understand you, can you repeat again, please?")
