@@ -7,13 +7,13 @@
 Clone the repo, cd into the directory and run
 
 ```console
-python -m pip install .
+python -m pip install -e .
 ```
 
 If you want to install optional dependencies for speedups run this instead
 
 ```console
-python -m pip install .[speedups]
+python -m pip install -e .[speedups]
 ```
 
 ## ⚙ Setup
