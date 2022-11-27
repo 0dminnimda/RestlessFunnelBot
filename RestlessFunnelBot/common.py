@@ -30,7 +30,10 @@ async def commands(bot: Bot, text: str) -> None:
 
 @bot.command(DEFAULT_COMMAND)
 async def default_response(bot: Bot, text: str) -> None:
-    await bot.send("Sorry, I don't understand you, can you repeat again, please?")
+    await bot.send(
+        "Sorry, I don't understand you, can you repeat again, please?\n"
+        "If you are lost check out /help command!"
+    )
 
 
 TIME_FORMAT = "%d %B %Y - %H:%M:%S (%Z)"
