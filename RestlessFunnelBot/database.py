@@ -2,13 +2,10 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any, AsyncGenerator, List, Optional, Type, TypeVar
 
-from sqlalchemy import func as sql_func
 from sqlalchemy.engine import Result, ScalarResult
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.sql import Select
-from sqlalchemy.sql.elements import ColumnClause
 from sqlalchemy.orm import load_only
-from sqlalchemy.sql.roles import ExpressionElementRole
 from sqlmodel import SQLModel, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
