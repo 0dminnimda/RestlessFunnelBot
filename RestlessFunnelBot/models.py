@@ -71,21 +71,28 @@ class Chat(PlatformModel, table=True):
         return self.name.replace(NAME_SEPARATOR, sep)
 
 
+def _unique_append(lst: List[int], item: int) -> List[int]:
+    ind = bisect(lst, item)
+    if not (ind > 0 and lst[ind - 1] == item):
+        # otherwise list is not updated in the db
+        lst = list(lst)
+        lst.insert(ind, item)
+    return lst
+
+
 class User(PlatformModel, table=True):
+    chats: List[int] = Field(default_factory=list, sa_column=Column(JSON))
     connection_id: int = Field(foreign_key="connecteduser.id")
     connection: ConnectedUser = Relationship()
+
+    def add_chat(self, chat: Chat) -> None:
+        assert chat.id is not None
+        self.chats = _unique_append(self.chats, chat.id)
+        self.connection.chats = _unique_append(self.connection.chats, chat.id)
 
 
 class ConnectedUser(BaseModel, table=True):
     chats: List[int] = Field(default_factory=list, sa_column=Column(JSON))
-
-    def add_chat(self, chat: Chat) -> None:
-        assert chat.id is not None
-        ind = bisect(self.chats, chat.id)
-        if not (ind > 0 and self.chats[ind - 1] == chat.id):
-            # otherwise list is not updated in the db
-            self.chats = list(self.chats)
-            self.chats.insert(ind, chat.id)
 
     def add_chats_from(self, other: ConnectedUser) -> None:
         self.chats = sorted(set(self.chats).union(other.chats))

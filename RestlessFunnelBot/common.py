@@ -137,7 +137,7 @@ async def make_message(
 
     msg = db.create_no_add(Message, **fields)
     if not is_private:
-        author.connection.add_chat(chat)
+        author.add_chat(chat)
         db.add(msg)
     return msg
 
