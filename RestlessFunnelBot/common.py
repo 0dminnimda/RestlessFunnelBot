@@ -112,8 +112,8 @@ async def link(bot: Bot, text: str) -> None:
             await bot.send(
                 "With this command you link your account to another account\n"
                 "\n"
-                f"I created a temporary a secret code for you: {key}\n"
-                f"Hurry, it will last only for {AUTH_TTL} seconds\n"
+                f"I created a temporary a secret code for you\n"
+                f"Hurry up, it will last only for {AUTH_TTL} seconds!\n"
                 "\n"
                 "To use it log into another account and send this message:"
             )
