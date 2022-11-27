@@ -65,6 +65,8 @@ def set_auth_key(id: int, key: str) -> str:
 
 async def actually_link(bot: Bot, other_user_id: int) -> None:
     other = await bot.db.read_one(User, id=other_user_id)
+    if other.connection_id == bot.msg.author.connection_id:
+        return
     other_connection = await bot.db.read_one(ConnectedUser, id=other.connection_id)
 
     all_others = await bot.db.read_all(User, connection_id=other.connection_id)
@@ -73,6 +75,7 @@ async def actually_link(bot: Bot, other_user_id: int) -> None:
         user.connection = bot.msg.author.connection
 
     bot.msg.author.connection.add_chats_from(other_connection)
+    assert bot.msg.author.connection is not other_connection
     await bot.db.delete(other_connection)
 
 
