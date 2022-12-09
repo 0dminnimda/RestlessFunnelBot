@@ -44,4 +44,4 @@ python -m RestlessFunnelBot
 
 - VK: [restlessfunnelbot](https://vk.com/restlessfunnelbot)
 - Discord: [invitation link](https://discord.com/api/oauth2/authorize?client_id=1033399831084937327&permissions=84992&scope=bot)
-- Telegram: `@RestlessFunnelBot`
+- Telegram: [@RestlessFunnelBot](https://t.me/RestlessFunnelBot)
